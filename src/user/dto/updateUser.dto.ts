@@ -1,7 +1,7 @@
 import { Exclude, Transform } from 'class-transformer';
 import { IsEmail, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class UpdateUsersDto {
+export class UpdateUserDto {
   @Transform((id) => +id.value)
   @IsNumber()
   readonly id: number;
