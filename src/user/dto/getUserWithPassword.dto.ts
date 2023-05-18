@@ -1,10 +1,6 @@
-import { IsEmail, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
 
-export class GetUserDto {
-  @IsOptional()
-  @IsNumber()
-  readonly id?: number;
-
+export class GetUserWithPasswordDto {
   @IsOptional()
   @IsString()
   readonly firstName?: string;
@@ -16,4 +12,8 @@ export class GetUserDto {
   @IsOptional()
   @IsEmail()
   readonly email?: string;
+
+  @IsOptional()
+  @IsEmail()
+  readonly password?: string;
 }

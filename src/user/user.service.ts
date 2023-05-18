@@ -5,6 +5,7 @@ import { Users } from './user.entity';
 import { GetUserDto } from './dto/getUser.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { GetUserWithPasswordDto } from './dto/getUserWithPassword.dto';
 
 @Injectable()
 export class UserService {
@@ -38,9 +39,17 @@ export class UserService {
         select: ['id', 'firstName', 'lastName', 'email'],
       });
     } catch (error) {
-      console.log(error);
-
       throw new BadRequestException(`Não foi possível listar o usuário: ${id}`);
+    }
+  }
+
+  async findForAuthentication(
+    user: GetUserDto,
+  ): Promise<GetUserWithPasswordDto> {
+    try {
+      return await this.userRepository.findOne({ where: { ...user } });
+    } catch (error) {
+      throw new BadRequestException('Não foi possível listar o usuário');
     }
   }
 
@@ -62,8 +71,6 @@ export class UserService {
         }),
       );
     } catch (error) {
-      console.log(error);
-
       throw new BadRequestException('Não foi possível criar usuário');
     }
   }
@@ -76,8 +83,6 @@ export class UserService {
         select: ['id', 'firstName', 'lastName', 'email'],
       });
     } catch (error) {
-      console.log(error);
-
       throw new BadRequestException(`Não foi possível editar o usuário: ${id}`);
     }
   }
@@ -92,8 +97,6 @@ export class UserService {
     try {
       await this.userRepository.delete(id);
     } catch (error) {
-      console.log(error);
-
       throw new BadRequestException(
         `Não foi possível excluir o usuário: ${id}`,
       );
