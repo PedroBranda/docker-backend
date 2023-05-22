@@ -3,6 +3,9 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { compareSync } from 'bcrypt';
 import { GetUserDto } from 'src/user/dto/getUser.dto';
+import { config } from 'dotenv';
+
+config();
 
 @Injectable()
 export class AuthService {
