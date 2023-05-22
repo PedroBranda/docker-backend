@@ -21,25 +21,37 @@ export class UserService {
   }
 
   async findAll(): Promise<GetUserDto[]> {
-    return await this.userRepository.find({
-      select: ['id', 'firstName', 'lastName', 'email'],
-    });
+    try {
+      return await this.userRepository.find({
+        select: ['id', 'firstName', 'lastName', 'email'],
+      });
+    } catch (error) {
+      throw new BadRequestException({
+        message: `Não foi possível listar o(s) usuário(s)`,
+        error,
+      });
+    }
+  }
+
+  async findWhere(user: GetUserDto): Promise<GetUserDto> {
+    try {
+      return await this.userRepository.findOneOrFail({ where: { ...user } });
+    } catch (error) {
+      throw new Error();
+    }
   }
 
   async findOne(id: number): Promise<GetUserDto> {
-    const hasUser = await this.userRepository.findOne({ where: { id } });
-
-    if (!hasUser) {
-      throw new BadRequestException(`O usuário: ${id}, não existe`);
-    }
-
     try {
-      return await this.userRepository.findOne({
+      return await this.userRepository.findOneOrFail({
         where: { id },
         select: ['id', 'firstName', 'lastName', 'email'],
       });
     } catch (error) {
-      throw new BadRequestException(`Não foi possível listar o usuário: ${id}`);
+      throw new BadRequestException({
+        message: `Não foi possível listar o usuário: ${id}`,
+        error,
+      });
     }
   }
 
@@ -47,18 +59,21 @@ export class UserService {
     user: GetUserDto,
   ): Promise<GetUserWithPasswordDto> {
     try {
-      return await this.userRepository.findOne({ where: { ...user } });
+      return await this.userRepository.findOneOrFail({ where: { ...user } });
     } catch (error) {
-      throw new BadRequestException('Não foi possível listar o usuário');
+      throw new BadRequestException({
+        message: 'Não foi possível listar o usuário',
+        error,
+      });
     }
   }
 
   async create(user: Users): Promise<Users> {
-    const hasEmail = await this.userRepository.findOne({
+    const hasUserWithEmail = await this.userRepository.findOne({
       where: { email: user.email },
     });
 
-    if (hasEmail) {
+    if (hasUserWithEmail) {
       throw new BadRequestException('O e-mail informado já foi cadastrado');
     }
 
@@ -71,35 +86,45 @@ export class UserService {
         }),
       );
     } catch (error) {
-      throw new BadRequestException('Não foi possível criar usuário');
+      throw new BadRequestException({
+        message: 'Não foi possível criar usuário',
+        error,
+      });
     }
   }
 
   async update(id: number, user: UpdateUserDto): Promise<Users> {
     try {
-      await this.userRepository.update(id, user);
-      return await this.userRepository.findOne({
+      await this.userRepository.update(id, { ...user });
+
+      return await this.userRepository.findOneOrFail({
         where: { id },
         select: ['id', 'firstName', 'lastName', 'email'],
       });
     } catch (error) {
-      throw new BadRequestException(`Não foi possível editar o usuário: ${id}`);
+      throw new BadRequestException({
+        message: `Não foi possível editar o usuário: ${id}`,
+        error,
+      });
     }
   }
 
   async delete(id: number): Promise<void> {
-    const hasUser = await this.userRepository.findOne({ where: { id } });
-
-    if (!hasUser) {
-      throw new BadRequestException(`O usuário: ${id}, não existe`);
-    }
-
     try {
+      const hasUser = await this.userRepository.findOneOrFail({
+        where: { id },
+      });
+
+      if (!hasUser) {
+        throw new BadRequestException(`O usuário: ${id}, não existe`);
+      }
+
       await this.userRepository.delete(id);
     } catch (error) {
-      throw new BadRequestException(
-        `Não foi possível excluir o usuário: ${id}`,
-      );
+      throw new BadRequestException({
+        message: `Não foi possível excluir o usuário: ${id}`,
+        error,
+      });
     }
   }
 }

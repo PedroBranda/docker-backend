@@ -9,12 +9,17 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from 'src/decorators/public.decorator';
 import { config } from 'dotenv';
+import { UserService } from 'src/user/user.service';
 
 config();
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService, private reflector: Reflector) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly reflector: Reflector,
+    private readonly userService: UserService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -37,9 +42,22 @@ export class AuthGuard implements CanActivate {
       const payload = await this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
       });
+
+      const userIsValid = await this.userService.findWhere({
+        id: payload.id,
+        email: payload.email,
+      });
+
+      if (!userIsValid) {
+        throw new Error();
+      }
+
       request['user'] = payload;
-    } catch (e) {
-      throw new UnauthorizedException('Erro ao verificar o token');
+    } catch (error) {
+      throw new UnauthorizedException({
+        message: 'Erro ao verificar o token',
+        error,
+      });
     }
 
     return true;

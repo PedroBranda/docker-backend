@@ -14,8 +14,7 @@ export class UpdateUserDto {
   @IsString()
   readonly lastName?: string;
 
-  @IsOptional()
-  @IsEmail()
+  @Exclude()
   readonly email?: string;
 
   @Exclude()

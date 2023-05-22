@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { compareSync } from 'bcrypt';
@@ -38,7 +42,10 @@ export class AuthService {
         token: this.jwtService.sign(payload),
       };
     } catch (error) {
-      throw new BadRequestException('Erro ao autenticar o usuário');
+      throw new BadRequestException({
+        message: 'Erro ao autenticar o usuário',
+        error,
+      });
     }
   }
 }
