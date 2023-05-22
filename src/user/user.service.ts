@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Users } from './user.entity';
 import { GetUserDto } from './dto/getUser.dto';
-import * as bcrypt from 'bcrypt';
+import { hash } from 'bcrypt';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { GetUserWithPasswordDto } from './dto/getUserWithPassword.dto';
 
@@ -16,8 +16,8 @@ export class UserService {
 
   async hashPassword(password: string): Promise<string> {
     const saltRounds = 10;
-    const hash = await bcrypt.hash(password, saltRounds);
-    return hash;
+    const passwordHash = await hash(password, saltRounds);
+    return passwordHash;
   }
 
   async findAll(): Promise<GetUserDto[]> {

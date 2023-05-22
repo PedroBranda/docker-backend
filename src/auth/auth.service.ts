@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
-import * as bcrypt from 'bcrypt';
+import { compareSync } from 'bcrypt';
 import { GetUserDto } from 'src/user/dto/getUser.dto';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class AuthService {
     const user = await this.userService.findForAuthentication({ email });
 
     if (user) {
-      const passwordMatch = bcrypt.compareSync(password, user.password);
+      const passwordMatch = compareSync(password, user.password);
 
       if (passwordMatch) {
         return user;
