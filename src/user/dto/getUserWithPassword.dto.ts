@@ -1,9 +1,13 @@
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class GetUserWithPasswordDto {
   @IsOptional()
   @IsString()
   readonly firstName?: string;
+
+  @IsOptional()
+  @IsNumber()
+  readonly permissionLevel?: number;
 
   @IsOptional()
   @IsString()

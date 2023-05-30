@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Users } from './user.entity';
+import { UserPermissionLevel, Users } from './user.entity';
 import { GetUserDto } from './dto/getUser.dto';
 import { hash } from 'bcrypt';
 import { UpdateUserDto } from './dto/updateUser.dto';
@@ -16,14 +16,13 @@ export class UserService {
 
   async hashPassword(password: string): Promise<string> {
     const saltRounds = 10;
-    const passwordHash = await hash(password, saltRounds);
-    return passwordHash;
+    return await hash(password, saltRounds);
   }
 
   async findAll(): Promise<GetUserDto[]> {
     try {
       return await this.userRepository.find({
-        select: ['id', 'firstName', 'lastName', 'email'],
+        select: ['id', 'firstName', 'lastName', 'email', 'permissionLevel'],
       });
     } catch (error) {
       throw new BadRequestException({
@@ -45,7 +44,7 @@ export class UserService {
     try {
       return await this.userRepository.findOneOrFail({
         where: { id },
-        select: ['id', 'firstName', 'lastName', 'email'],
+        select: ['id', 'firstName', 'lastName', 'email', 'permissionLevel'],
       });
     } catch (error) {
       throw new BadRequestException({
@@ -55,16 +54,13 @@ export class UserService {
     }
   }
 
-  async findForAuthentication(
-    user: GetUserDto,
-  ): Promise<GetUserWithPasswordDto> {
+  async findForAuthentication(email: string): Promise<GetUserWithPasswordDto> {
     try {
-      return await this.userRepository.findOneOrFail({ where: { ...user } });
+      return await this.userRepository.findOneOrFail({ where: { email } });
     } catch (error) {
-      throw new BadRequestException({
-        message: 'Não foi possível listar o usuário',
-        error,
-      });
+      throw new BadRequestException(
+        'E-mail ou senha informados podem estar incorretos',
+      );
     }
   }
 
@@ -79,9 +75,11 @@ export class UserService {
 
     try {
       const hashedPassword = await this.hashPassword(user.password);
+
       return await this.userRepository.save(
         this.userRepository.create({
           ...user,
+          permissionLevel: UserPermissionLevel.player,
           password: hashedPassword,
         }),
       );
@@ -111,13 +109,9 @@ export class UserService {
 
   async delete(id: number): Promise<void> {
     try {
-      const hasUser = await this.userRepository.findOneOrFail({
+      await this.userRepository.findOneOrFail({
         where: { id },
       });
-
-      if (!hasUser) {
-        throw new BadRequestException(`O usuário: ${id}, não existe`);
-      }
 
       await this.userRepository.delete(id);
     } catch (error) {

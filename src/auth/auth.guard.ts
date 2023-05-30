@@ -8,8 +8,8 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from 'src/decorators/public.decorator';
-import { config } from 'dotenv';
 import { UserService } from 'src/user/user.service';
+import { config } from 'dotenv';
 
 config();
 
@@ -43,14 +43,11 @@ export class AuthGuard implements CanActivate {
         secret: process.env.JWT_SECRET,
       });
 
-      const userIsValid = await this.userService.findWhere({
+      await this.userService.findWhere({
         id: payload.id,
         email: payload.email,
+        permissionLevel: payload.permissionLevel,
       });
-
-      if (!userIsValid) {
-        throw new Error();
-      }
 
       request['user'] = payload;
     } catch (error) {

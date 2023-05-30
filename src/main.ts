@@ -9,6 +9,9 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  await app.listen(3000);
+  await app.listen(process.env.APP_PORT);
 }
-bootstrap();
+
+bootstrap().then(() =>
+  console.log('Server Started at port: ' + process.env.APP_PORT),
+);

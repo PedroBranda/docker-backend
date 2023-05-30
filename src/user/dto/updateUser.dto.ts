@@ -1,5 +1,5 @@
 import { Exclude, Transform } from 'class-transformer';
-import { IsEmail, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateUserDto {
   @Transform((id) => +id.value)

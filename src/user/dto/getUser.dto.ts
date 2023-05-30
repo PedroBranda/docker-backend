@@ -6,6 +6,10 @@ export class GetUserDto {
   readonly id?: number;
 
   @IsOptional()
+  @IsNumber()
+  readonly permissionLevel?: number;
+
+  @IsOptional()
   @IsString()
   readonly firstName?: string;
 

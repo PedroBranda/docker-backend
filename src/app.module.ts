@@ -10,9 +10,6 @@ import { AuthController } from './auth/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
-import { config } from 'dotenv';
-
-config();
 
 @Module({
   imports: [
