@@ -3,7 +3,9 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { compareSync } from 'bcrypt';
 import { GetUserDto } from 'src/user/dto/getUser.dto';
+import { authUserPayload } from './auth.types';
 
+// TODO: create JSDoc to all service functions and methods
 @Injectable()
 export class AuthService {
   constructor(
@@ -23,10 +25,10 @@ export class AuthService {
   }
 
   async sign(user: GetUserDto) {
-    const payload = {
+    const payload: authUserPayload = {
       email: user.email,
       id: user.id,
-      permissionLevel: user.permissionLevel,
+      permissions: user.permissions,
     };
 
     try {

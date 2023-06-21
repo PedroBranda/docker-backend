@@ -1,6 +1,10 @@
-# docker-backend
+# **docker-app-backend**
 
-app backend feito utilizando a biblioteca NestJs, com persistência de dados usando o PostgreSQL e para controle visual do banco utiliza-se o pgAdmin4.
+## Aplicação backend feita utilizando a biblioteca NestJs, com persistência de dados usando o PostgreSQL.
 
-# TODO:
-refatorar as credenciais que estão estáticas
+Para rodar a aplicação siga os passos a seguir:
+
+    docker compose up -d
+
+### TODO:
+

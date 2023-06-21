@@ -10,6 +10,7 @@ import { Request } from 'express';
 import { IS_PUBLIC_KEY } from 'src/decorators/public.decorator';
 import { UserService } from 'src/user/user.service';
 import { config } from 'dotenv';
+import { authUserPayload } from './auth.types';
 
 config();
 
@@ -39,20 +40,19 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verify(token, {
-        secret: process.env.JWT_SECRET,
-      });
+      const { id, email, permissions }: authUserPayload =
+        await this.jwtService.verify(token, {
+          secret: process.env.JWT_SECRET,
+        });
 
-      await this.userService.findWhere({
-        id: payload.id,
-        email: payload.email,
-        permissionLevel: payload.permissionLevel,
+      request['user'] = await this.userService.findWhere({
+        id,
+        email,
+        permissions,
       });
-
-      request['user'] = payload;
     } catch (error) {
       throw new UnauthorizedException({
-        message: 'Error to verify token',
+        message: 'Invalid token',
         error,
       });
     }

@@ -28,7 +28,7 @@ export class Users {
     default: UserPermission.player,
   })
   @IsOptional()
-  permission?: number;
+  permissions?: number;
 
   @Column()
   firstName: string;
@@ -42,15 +42,15 @@ export class Users {
   @Column()
   password: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp' })
   @IsOptional()
   createdAt?: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp' })
   @IsOptional()
   updatedAt?: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ type: 'timestamp' })
   @IsOptional()
   deletedAt?: Date;
 
@@ -58,7 +58,7 @@ export class Users {
   @IsOptional()
   createdBy?: number;
 
-  @Column({ default: null })
+  @Column({ default: DefaultUsers.admin })
   @IsOptional()
   updatedBy?: number;
 

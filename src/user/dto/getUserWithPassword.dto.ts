@@ -7,7 +7,7 @@ export class GetUserWithPasswordDto {
 
   @IsOptional()
   @IsNumber()
-  readonly permissionLevel?: number;
+  readonly permissions?: number;
 
   @IsOptional()
   @IsString()

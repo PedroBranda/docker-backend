@@ -7,6 +7,7 @@ import { hash } from 'bcrypt';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { GetUserWithPasswordDto } from './dto/getUserWithPassword.dto';
 
+// TODO: create JSDoc to all service functions and methods
 @Injectable()
 export class UserService {
   constructor(
@@ -27,7 +28,7 @@ export class UserService {
           'firstName',
           'lastName',
           'email',
-          'permission',
+          'permissions',
           'createdAt',
           'createdBy',
           'updatedAt',
@@ -62,7 +63,7 @@ export class UserService {
           'firstName',
           'lastName',
           'email',
-          'permission',
+          'permissions',
           'createdAt',
           'createdBy',
           'updatedAt',
@@ -118,10 +119,12 @@ export class UserService {
     }
   }
 
-  async update(id: number, user: UpdateUserDto, fromUser): Promise<Users> {
-    console.log({ fromUser });
+  async update(id: number, user: UpdateUserDto): Promise<Users> {
     try {
-      await this.userRepository.update(id, { ...user });
+      await this.userRepository.update(id, {
+        ...user,
+        updatedBy: id,
+      });
 
       return await this.userRepository.findOneOrFail({
         where: { id },
@@ -130,7 +133,7 @@ export class UserService {
           'firstName',
           'lastName',
           'email',
-          'permission',
+          'permissions',
           'createdAt',
           'createdBy',
           'updatedAt',
@@ -153,7 +156,7 @@ export class UserService {
         where: { id },
       });
 
-      await this.userRepository.softDelete(id);
+      await this.userRepository.softDelete({ id });
     } catch (error) {
       throw new BadRequestException({
         message: `Unable to delete the user: ${id}`,
