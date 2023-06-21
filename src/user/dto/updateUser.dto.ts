@@ -15,7 +15,10 @@ export class UpdateUserDto {
   readonly lastName?: string;
 
   @Exclude()
-  readonly email?: string;
+  readonly permission: number;
+
+  @Exclude()
+  readonly email: string;
 
   @Exclude()
   readonly password: string;

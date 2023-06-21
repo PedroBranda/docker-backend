@@ -35,7 +35,7 @@ export class AuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      throw new UnauthorizedException('Sem autorização');
+      throw new UnauthorizedException('No authorization');
     }
 
     try {
@@ -52,7 +52,7 @@ export class AuthGuard implements CanActivate {
       request['user'] = payload;
     } catch (error) {
       throw new UnauthorizedException({
-        message: 'Erro ao verificar o token',
+        message: 'Error to verify token',
         error,
       });
     }

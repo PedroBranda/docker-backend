@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserPermissionLevel, Users } from './user.entity';
+import { Users } from './user.entity';
 import { GetUserDto } from './dto/getUser.dto';
 import { hash } from 'bcrypt';
 import { UpdateUserDto } from './dto/updateUser.dto';
@@ -22,11 +22,24 @@ export class UserService {
   async findAll(): Promise<GetUserDto[]> {
     try {
       return await this.userRepository.find({
-        select: ['id', 'firstName', 'lastName', 'email', 'permissionLevel'],
+        select: [
+          'id',
+          'firstName',
+          'lastName',
+          'email',
+          'permission',
+          'createdAt',
+          'createdBy',
+          'updatedAt',
+          'updatedBy',
+          'deletedAt',
+          'deletedBy',
+        ],
+        order: { id: 'ASC' },
       });
     } catch (error) {
       throw new BadRequestException({
-        message: `Não foi possível listar o(s) usuário(s)`,
+        message: `Unable to list the users`,
         error,
       });
     }
@@ -44,11 +57,23 @@ export class UserService {
     try {
       return await this.userRepository.findOneOrFail({
         where: { id },
-        select: ['id', 'firstName', 'lastName', 'email', 'permissionLevel'],
+        select: [
+          'id',
+          'firstName',
+          'lastName',
+          'email',
+          'permission',
+          'createdAt',
+          'createdBy',
+          'updatedAt',
+          'updatedBy',
+          'deletedAt',
+          'deletedBy',
+        ],
       });
     } catch (error) {
       throw new BadRequestException({
-        message: `Não foi possível listar o usuário: ${id}`,
+        message: `Unable to list the user: ${id}`,
         error,
       });
     }
@@ -58,9 +83,10 @@ export class UserService {
     try {
       return await this.userRepository.findOneOrFail({ where: { email } });
     } catch (error) {
-      throw new BadRequestException(
-        'E-mail ou senha informados podem estar incorretos',
-      );
+      throw new BadRequestException({
+        message: 'E-mail or password given can be wrong',
+        error,
+      });
     }
   }
 
@@ -70,7 +96,9 @@ export class UserService {
     });
 
     if (hasUserWithEmail) {
-      throw new BadRequestException('O e-mail informado já foi cadastrado');
+      throw new BadRequestException(
+        'The e-mail given has already been registered',
+      );
     }
 
     try {
@@ -79,29 +107,41 @@ export class UserService {
       return await this.userRepository.save(
         this.userRepository.create({
           ...user,
-          permissionLevel: UserPermissionLevel.player,
           password: hashedPassword,
         }),
       );
     } catch (error) {
       throw new BadRequestException({
-        message: 'Não foi possível criar usuário',
+        message: 'Unable to create user',
         error,
       });
     }
   }
 
-  async update(id: number, user: UpdateUserDto): Promise<Users> {
+  async update(id: number, user: UpdateUserDto, fromUser): Promise<Users> {
+    console.log({ fromUser });
     try {
       await this.userRepository.update(id, { ...user });
 
       return await this.userRepository.findOneOrFail({
         where: { id },
-        select: ['id', 'firstName', 'lastName', 'email'],
+        select: [
+          'id',
+          'firstName',
+          'lastName',
+          'email',
+          'permission',
+          'createdAt',
+          'createdBy',
+          'updatedAt',
+          'updatedBy',
+          'deletedAt',
+          'deletedBy',
+        ],
       });
     } catch (error) {
       throw new BadRequestException({
-        message: `Não foi possível editar o usuário: ${id}`,
+        message: `Unable to edit the user: ${id}`,
         error,
       });
     }
@@ -113,10 +153,10 @@ export class UserService {
         where: { id },
       });
 
-      await this.userRepository.delete(id);
+      await this.userRepository.softDelete(id);
     } catch (error) {
       throw new BadRequestException({
-        message: `Não foi possível excluir o usuário: ${id}`,
+        message: `Unable to delete the user: ${id}`,
         error,
       });
     }

@@ -16,9 +16,7 @@ export class AuthService {
     const passwordMatch = compareSync(password, user.password);
 
     if (!passwordMatch) {
-      throw new BadRequestException(
-        'E-mail ou senha informados podem estar incorretos',
-      );
+      throw new BadRequestException('E-mail or password given can be wrong');
     }
 
     return user;
@@ -37,7 +35,7 @@ export class AuthService {
       };
     } catch (error) {
       throw new BadRequestException({
-        message: 'Erro ao autenticar o usuário',
+        message: 'Error to authenticate the user',
         error,
       });
     }

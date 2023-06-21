@@ -12,6 +12,7 @@ import { GetUserDto } from './dto/getUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { UserService } from './user.service';
 import { Public } from 'src/decorators/public.decorator';
+import { User } from '../decorators/user.decorator';
 
 @Controller('user')
 export class UserController {
@@ -34,8 +35,8 @@ export class UserController {
   }
 
   @Patch()
-  update(@Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(updateUserDto.id, updateUserDto);
+  update(@Body() updateUserDto: UpdateUserDto, @User() user) {
+    return this.usersService.update(updateUserDto.id, updateUserDto, user);
   }
 
   @Delete(':id')
