@@ -20,9 +20,9 @@ export class UserService {
     return await hash(password, saltRounds);
   }
 
-  async findAll(): Promise<GetUserDto[]> {
+  async findAll() {
     try {
-      return await this.userRepository.find({
+      const [result, total] = await this.userRepository.findAndCount({
         select: [
           'id',
           'firstName',
@@ -38,6 +38,8 @@ export class UserService {
         ],
         order: { id: 'ASC' },
       });
+
+      return { result, total };
     } catch (error) {
       throw new BadRequestException({
         message: `Unable to list the users`,
@@ -46,7 +48,7 @@ export class UserService {
     }
   }
 
-  async findWhere(user: GetUserDto): Promise<GetUserDto> {
+  async findWhere(user: GetUserDto) {
     try {
       return await this.userRepository.findOneOrFail({ where: { ...user } });
     } catch (error) {
@@ -54,9 +56,9 @@ export class UserService {
     }
   }
 
-  async findOne(id: number): Promise<GetUserDto> {
+  async findOne(id: number) {
     try {
-      return await this.userRepository.findOneOrFail({
+      const result = await this.userRepository.findOneOrFail({
         where: { id },
         select: [
           'id',
@@ -72,6 +74,8 @@ export class UserService {
           'deletedBy',
         ],
       });
+
+      return { result };
     } catch (error) {
       throw new BadRequestException({
         message: `Unable to list the user: ${id}`,
@@ -91,7 +95,7 @@ export class UserService {
     }
   }
 
-  async create(user: Users): Promise<Users> {
+  async create(user: Users) {
     const hasUserWithEmail = await this.userRepository.findOne({
       where: { email: user.email },
     });
@@ -105,12 +109,14 @@ export class UserService {
     try {
       const hashedPassword = await this.hashPassword(user.password);
 
-      return await this.userRepository.save(
+      const result = await this.userRepository.save(
         this.userRepository.create({
           ...user,
           password: hashedPassword,
         }),
       );
+
+      return { result };
     } catch (error) {
       throw new BadRequestException({
         message: 'Unable to create user',
@@ -119,14 +125,14 @@ export class UserService {
     }
   }
 
-  async update(id: number, user: UpdateUserDto): Promise<Users> {
+  async update(id: number, user: UpdateUserDto) {
     try {
       await this.userRepository.update(id, {
         ...user,
         updatedBy: id,
       });
 
-      return await this.userRepository.findOneOrFail({
+      const result = await this.userRepository.findOneOrFail({
         where: { id },
         select: [
           'id',
@@ -142,6 +148,8 @@ export class UserService {
           'deletedBy',
         ],
       });
+
+      return { result };
     } catch (error) {
       throw new BadRequestException({
         message: `Unable to edit the user: ${id}`,

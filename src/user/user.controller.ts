@@ -8,7 +8,6 @@ import {
   Post,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/createUser.dto';
-import { GetUserDto } from './dto/getUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { UserService } from './user.service';
 import { Public } from 'src/decorators/public.decorator';
@@ -19,12 +18,12 @@ export class UserController {
   constructor(private readonly usersService: UserService) {}
 
   @Get()
-  get(): Promise<GetUserDto[]> {
+  get() {
     return this.usersService.findAll();
   }
 
   @Get(':id')
-  getOne(@Param('id') id: number): Promise<GetUserDto> {
+  getOne(@Param('id') id: number) {
     return this.usersService.findOne(id);
   }
 
