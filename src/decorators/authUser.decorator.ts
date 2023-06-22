@@ -14,6 +14,10 @@ type AuthUserPropertyTypes =
   | 'updatedBy'
   | 'deletedBy';
 
+/**
+ * Handler that returns the authenticated user, or some of his properties
+ * @param property - The property to extract
+ */
 export const AuthUser = createParamDecorator(
   (property: AuthUserPropertyTypes, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
