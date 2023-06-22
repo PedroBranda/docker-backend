@@ -9,10 +9,10 @@ export class AuthController {
 
   @Public()
   @Post()
-  async auth(@Body() authenticationDto: AuthDto) {
+  async auth(@Body() authDto: AuthDto) {
     const userValidated = await this.authService.validateUser(
-      authenticationDto.email,
-      authenticationDto.password,
+      authDto.email,
+      authDto.password,
     );
 
     if (userValidated) {
