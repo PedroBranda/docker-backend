@@ -12,7 +12,6 @@ import { UpdateUserDto } from './dto/updateUser.dto';
 import { UserService } from './user.service';
 import { Public } from 'src/decorators/public.decorator';
 import { AuthUser } from '../decorators/authUser.decorator';
-import { Users } from './user.entity';
 
 @Controller('user')
 export class UserController {

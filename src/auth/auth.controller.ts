@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthenticationDto } from './dto/authentication.dto';
+import { AuthDto } from './dto/auth.dto';
 import { Public } from 'src/decorators/public.decorator';
 
 @Controller('auth')
@@ -9,7 +9,7 @@ export class AuthController {
 
   @Public()
   @Post()
-  async auth(@Body() authenticationDto: AuthenticationDto) {
+  async auth(@Body() authenticationDto: AuthDto) {
     const userValidated = await this.authService.validateUser(
       authenticationDto.email,
       authenticationDto.password,

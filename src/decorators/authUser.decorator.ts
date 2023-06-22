@@ -1,18 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-
-type AuthUserPropertyTypes =
-  | 'id'
-  | 'permissions'
-  | 'firstName'
-  | 'lastName'
-  | 'email'
-  | 'password'
-  | 'createdAt'
-  | 'updatedAt'
-  | 'deletedAt'
-  | 'createdBy'
-  | 'updatedBy'
-  | 'deletedBy';
+import { AuthUserPropertyTypes } from './types/authUserProperty.types';
 
 /**
  * Handler that returns the authenticated user, or some of his properties

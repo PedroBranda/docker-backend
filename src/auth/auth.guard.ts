@@ -10,8 +10,7 @@ import { Request } from 'express';
 import { IS_PUBLIC_KEY } from 'src/decorators/public.decorator';
 import { UserService } from 'src/user/user.service';
 import { config } from 'dotenv';
-import { authUserPayload } from './auth.types';
-import { ArrayContains } from 'class-validator';
+import { authUserPayload } from './types/auth.types';
 
 config();
 

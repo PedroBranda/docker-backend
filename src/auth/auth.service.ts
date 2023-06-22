@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { compareSync } from 'bcrypt';
 import { GetUserDto } from 'src/user/dto/getUser.dto';
-import { authUserPayload } from './auth.types';
+import { authUserPayload } from './types/auth.types';
 
 // TODO: create JSDoc to all service functions and methods
 @Injectable()
