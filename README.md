@@ -4,7 +4,12 @@
 
 Para rodar a aplicação siga os passos a seguir:
 
-    docker compose up -d
+### PowerShell
+    docker compose build; docker compose up -d
 
-### TODO:
+### CMD
+    docker compose build && docker compose up -d
 
+#### TODO:
+ - create JSDoc to all service functions and methods
+ - create JSDoc to all service functions and methods

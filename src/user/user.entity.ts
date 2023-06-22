@@ -17,7 +17,6 @@ export enum DefaultUsers {
   admin = 0,
 }
 
-// TODO: refactor the permissions column to be an number array
 @Entity()
 export class Users {
   @PrimaryGeneratedColumn()
