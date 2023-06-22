@@ -12,6 +12,7 @@ import { UpdateUserDto } from './dto/updateUser.dto';
 import { UserService } from './user.service';
 import { Public } from 'src/decorators/public.decorator';
 import { AuthUser } from '../decorators/authUser.decorator';
+import { Users } from './user.entity';
 
 @Controller('user')
 export class UserController {
@@ -34,15 +35,12 @@ export class UserController {
   }
 
   @Patch()
-  update(
-    @AuthUser('id') authUser: number,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    return this.usersService.update(authUser, updateUserDto);
+  update(@AuthUser('id') id: number, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete()
-  delete(@AuthUser('id') authUser: number) {
-    return this.usersService.delete(authUser);
+  delete(@AuthUser('id') id: number) {
+    return this.usersService.delete(id);
   }
 }

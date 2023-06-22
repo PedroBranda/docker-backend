@@ -13,7 +13,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<GetUserDto> {
+  async validateUser(email: string, password: string) {
     const user = await this.userService.findForAuthentication(email);
     const passwordMatch = compareSync(password, user.password);
 
@@ -26,9 +26,7 @@ export class AuthService {
 
   async sign(user: GetUserDto) {
     const payload: authUserPayload = {
-      email: user.email,
       id: user.id,
-      permissions: user.permissions,
     };
 
     try {

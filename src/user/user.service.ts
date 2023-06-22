@@ -5,7 +5,6 @@ import { Users } from './user.entity';
 import { GetUserDto } from './dto/getUser.dto';
 import { hash } from 'bcrypt';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { GetUserWithPasswordDto } from './dto/getUserWithPassword.dto';
 
 // TODO: create JSDoc to all service functions and methods
 @Injectable()
@@ -50,7 +49,9 @@ export class UserService {
 
   async findWhere(user: GetUserDto) {
     try {
-      return await this.userRepository.findOneOrFail({ where: { ...user } });
+      return await this.userRepository.findOneOrFail({
+        where: { id: user.id, email: user.email },
+      });
     } catch (error) {
       throw new Error();
     }
@@ -84,7 +85,7 @@ export class UserService {
     }
   }
 
-  async findForAuthentication(email: string): Promise<GetUserWithPasswordDto> {
+  async findForAuthentication(email: string) {
     try {
       return await this.userRepository.findOneOrFail({ where: { email } });
     } catch (error) {

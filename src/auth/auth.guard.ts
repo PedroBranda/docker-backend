@@ -11,6 +11,7 @@ import { IS_PUBLIC_KEY } from 'src/decorators/public.decorator';
 import { UserService } from 'src/user/user.service';
 import { config } from 'dotenv';
 import { authUserPayload } from './auth.types';
+import { ArrayContains } from 'class-validator';
 
 config();
 
@@ -40,15 +41,12 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const { id, email, permissions }: authUserPayload =
-        await this.jwtService.verify(token, {
-          secret: process.env.JWT_SECRET,
-        });
+      const { id }: authUserPayload = await this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
 
       request['user'] = await this.userService.findWhere({
         id,
-        email,
-        permissions,
       });
     } catch (error) {
       throw new UnauthorizedException({

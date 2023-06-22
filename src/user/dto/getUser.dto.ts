@@ -7,7 +7,7 @@ export class GetUserDto {
 
   @IsOptional()
   @IsNumber()
-  readonly permissions?: number;
+  readonly permissions?: number[];
 
   @IsOptional()
   @IsString()

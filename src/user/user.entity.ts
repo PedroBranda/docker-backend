@@ -23,13 +23,9 @@ export class Users {
   @PrimaryGeneratedColumn()
   id?: number;
 
-  @Column({
-    type: 'enum',
-    enum: UserPermission,
-    default: UserPermission.player,
-  })
+  @Column('int', { array: true, default: [UserPermission.player] })
   @IsOptional()
-  permissions?: number;
+  permissions?: number[];
 
   @Column()
   firstName: string;
