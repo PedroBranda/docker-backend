@@ -27,6 +27,8 @@ export class UserService {
           'firstName',
           'lastName',
           'email',
+          'document',
+          'documentType',
           'permissions',
           'createdAt',
           'createdBy',
@@ -66,6 +68,8 @@ export class UserService {
           'firstName',
           'lastName',
           'email',
+          'document',
+          'documentType',
           'permissions',
           'createdAt',
           'createdBy',
@@ -140,6 +144,8 @@ export class UserService {
           'firstName',
           'lastName',
           'email',
+          'document',
+          'documentType',
           'permissions',
           'createdAt',
           'createdBy',
@@ -161,11 +167,8 @@ export class UserService {
 
   async delete(id: number): Promise<void> {
     try {
-      await this.userRepository.findOneOrFail({
-        where: { id },
-      });
-
       await this.userRepository.softDelete({ id });
+      await this.userRepository.update({ id }, { deletedBy: id });
     } catch (error) {
       throw new BadRequestException({
         message: `Unable to delete the user: ${id}`,

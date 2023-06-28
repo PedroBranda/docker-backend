@@ -6,8 +6,8 @@ import { AuthUserPropertyTypes } from './types/authUserProperty.types';
  * @param property - The property to extract
  */
 export const AuthUser = createParamDecorator(
-  (property: AuthUserPropertyTypes, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest();
+  (property: AuthUserPropertyTypes, context: ExecutionContext) => {
+    const request = context.switchToHttp().getRequest();
     const user = request.user;
 
     return property ? user?.[property] : user;

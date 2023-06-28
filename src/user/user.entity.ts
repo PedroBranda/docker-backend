@@ -17,6 +17,11 @@ export enum DefaultUsers {
   admin = 0,
 }
 
+export enum DocumentType {
+  rg = 0,
+  cpf = 1,
+}
+
 @Entity()
 export class Users {
   @PrimaryGeneratedColumn()
@@ -31,6 +36,12 @@ export class Users {
 
   @Column()
   lastName: string;
+
+  @Column()
+  document: string;
+
+  @Column({ type: 'enum', enum: DocumentType })
+  documentType: number;
 
   @Column()
   email: string;
