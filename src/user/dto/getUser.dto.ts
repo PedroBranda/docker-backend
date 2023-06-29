@@ -6,8 +6,12 @@ export class GetUserDto {
   readonly id?: number;
 
   @IsOptional()
+  @IsString()
+  readonly document?: string;
+
+  @IsOptional()
   @IsNumber()
-  readonly permissions?: number[];
+  readonly documentType?: number;
 
   @IsOptional()
   @IsString()

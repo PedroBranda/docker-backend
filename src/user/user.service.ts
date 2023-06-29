@@ -49,38 +49,29 @@ export class UserService {
     }
   }
 
-  async findWhere(user: GetUserDto) {
-    try {
-      return await this.userRepository.findOneOrFail({
-        where: { id: user.id, email: user.email },
-      });
-    } catch (error) {
-      throw new Error();
-    }
-  }
-
   async findOne(id: number) {
     try {
-      const result = await this.userRepository.findOneOrFail({
-        where: { id },
-        select: [
-          'id',
-          'firstName',
-          'lastName',
-          'email',
-          'document',
-          'documentType',
-          'permissions',
-          'createdAt',
-          'createdBy',
-          'updatedAt',
-          'updatedBy',
-          'deletedAt',
-          'deletedBy',
-        ],
-      });
-
-      return { result };
+      return {
+        result: await this.userRepository.findOneOrFail({
+          withDeleted: false,
+          where: { id },
+          select: [
+            'id',
+            'firstName',
+            'lastName',
+            'email',
+            'document',
+            'documentType',
+            'permissions',
+            'createdAt',
+            'createdBy',
+            'updatedAt',
+            'updatedBy',
+            'deletedAt',
+            'deletedBy',
+          ],
+        }),
+      };
     } catch (error) {
       throw new BadRequestException({
         message: `Unable to list the user: ${id}`,
@@ -89,9 +80,14 @@ export class UserService {
     }
   }
 
-  async findForAuthentication(email: string) {
+  async findWhere(params: GetUserDto) {
     try {
-      return await this.userRepository.findOneOrFail({ where: { email } });
+      return {
+        result: await this.userRepository.findOneOrFail({
+          where: { ...params },
+          select: ['id', 'password'],
+        }),
+      };
     } catch (error) {
       throw new BadRequestException({
         message: 'E-mail or password given can be wrong',
@@ -114,14 +110,14 @@ export class UserService {
     try {
       const hashedPassword = await this.hashPassword(user.password);
 
-      const result = await this.userRepository.save(
-        this.userRepository.create({
-          ...user,
-          password: hashedPassword,
-        }),
-      );
-
-      return { result };
+      return {
+        result: await this.userRepository.save(
+          this.userRepository.create({
+            ...user,
+            password: hashedPassword,
+          }),
+        ),
+      };
     } catch (error) {
       throw new BadRequestException({
         message: 'Unable to create user',
@@ -137,26 +133,26 @@ export class UserService {
         updatedBy: id,
       });
 
-      const result = await this.userRepository.findOneOrFail({
-        where: { id },
-        select: [
-          'id',
-          'firstName',
-          'lastName',
-          'email',
-          'document',
-          'documentType',
-          'permissions',
-          'createdAt',
-          'createdBy',
-          'updatedAt',
-          'updatedBy',
-          'deletedAt',
-          'deletedBy',
-        ],
-      });
-
-      return { result };
+      return {
+        result: await this.userRepository.findOneOrFail({
+          where: { id },
+          select: [
+            'id',
+            'firstName',
+            'lastName',
+            'email',
+            'document',
+            'documentType',
+            'permissions',
+            'createdAt',
+            'createdBy',
+            'updatedAt',
+            'updatedBy',
+            'deletedAt',
+            'deletedBy',
+          ],
+        }),
+      };
     } catch (error) {
       throw new BadRequestException({
         message: `Unable to edit the user: ${id}`,
@@ -165,10 +161,9 @@ export class UserService {
     }
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: number) {
     try {
       await this.userRepository.softDelete({ id });
-      await this.userRepository.update({ id }, { deletedBy: id });
     } catch (error) {
       throw new BadRequestException({
         message: `Unable to delete the user: ${id}`,

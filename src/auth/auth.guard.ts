@@ -10,7 +10,7 @@ import { Request } from 'express';
 import { IS_PUBLIC_KEY } from 'src/decorators/public.decorator';
 import { UserService } from 'src/user/user.service';
 import { config } from 'dotenv';
-import { authUserPayload } from './types/auth.types';
+import { AuthUserPayload } from './types/auth.types';
 
 config();
 
@@ -40,13 +40,13 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const { id }: authUserPayload = await this.jwtService.verify(token, {
+      const { id }: AuthUserPayload = await this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
       });
 
-      request['user'] = await this.userService.findWhere({
-        id,
-      });
+      const user = await this.userService.findOne(id);
+
+      request['user'] = user['result'];
     } catch (error) {
       throw new UnauthorizedException({
         message: 'Invalid token',

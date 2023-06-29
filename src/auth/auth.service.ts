@@ -2,8 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { compareSync } from 'bcrypt';
-import { GetUserDto } from 'src/user/dto/getUser.dto';
-import { authUserPayload } from './types/auth.types';
+import { AuthDto } from './dto/auth.dto';
 
 // TODO: create JSDoc to all service functions and methods
 @Injectable()
@@ -13,25 +12,25 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string) {
-    const user = await this.userService.findForAuthentication(email);
-    const passwordMatch = compareSync(password, user.password);
+  async validateUser(authDto: AuthDto) {
+    const {
+      result: { id, password },
+    } = await this.userService.findWhere({
+      email: authDto.email,
+    });
+    const passwordMatch = compareSync(authDto.password, password);
 
     if (!passwordMatch) {
       throw new BadRequestException('E-mail or password given can be wrong');
     }
 
-    return user;
+    return id;
   }
 
-  async sign(user: GetUserDto) {
-    const payload: authUserPayload = {
-      id: user.id,
-    };
-
+  async sign(id: number) {
     try {
       return {
-        token: this.jwtService.sign(payload),
+        token: this.jwtService.sign({ id }),
       };
     } catch (error) {
       throw new BadRequestException({
