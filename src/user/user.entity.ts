@@ -17,9 +17,15 @@ export enum DefaultUsers {
   admin = 0,
 }
 
-export enum DocumentType {
+export enum DocumentTypes {
   rg = 0,
   cpf = 1,
+}
+
+export enum UserGenders {
+  male = 0,
+  female = 1,
+  other = 2,
 }
 
 @Entity()
@@ -37,14 +43,23 @@ export class Users {
   @Column()
   lastName: string;
 
+  @Column({ type: 'enum', enum: UserGenders })
+  gender: number;
+
+  @Column()
+  birthDate: Date;
+
   @Column()
   document: string;
 
-  @Column({ type: 'enum', enum: DocumentType })
+  @Column({ type: 'enum', enum: DocumentTypes })
   documentType: number;
 
   @Column()
   email: string;
+
+  @Column()
+  phone: string;
 
   @Column()
   password: string;

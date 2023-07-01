@@ -1,4 +1,11 @@
-import { IsEmail, IsNumber, IsString, IsStrongPassword } from 'class-validator';
+import {
+  IsDateString,
+  IsEmail,
+  IsNumber,
+  IsPhoneNumber,
+  IsString,
+  IsStrongPassword,
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -12,6 +19,15 @@ export class CreateUserDto {
 
   @IsNumber()
   documentType: number;
+
+  @IsNumber()
+  readonly gender: number;
+
+  @IsDateString()
+  readonly birthDate: Date;
+
+  @IsPhoneNumber('BR')
+  readonly phone: string;
 
   @IsEmail()
   readonly email: string;
