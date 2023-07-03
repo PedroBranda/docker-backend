@@ -15,10 +15,10 @@ export class CreateUserDto {
   readonly lastName: string;
 
   @IsString()
-  document: string;
+  readonly document: string;
 
   @IsNumber()
-  documentType: number;
+  readonly documentType: number;
 
   @IsNumber()
   readonly gender: number;
