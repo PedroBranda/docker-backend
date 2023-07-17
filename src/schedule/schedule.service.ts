@@ -56,7 +56,7 @@ export class ScheduleService {
         )
       ) {
         throw new BadRequestException(
-          "You can't create an schedule if there is an open schedule in your response",
+          "You can't create an schedule if there is an open schedule in your name",
         );
       }
     }
