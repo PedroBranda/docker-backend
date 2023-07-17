@@ -12,8 +12,8 @@ export class CreateScheduleDto {
   readonly scheduleDate: Date;
 
   @IsLatitude()
-  lat: number;
+  readonly lat: number;
 
   @IsLongitude()
-  lng: number;
+  readonly lng: number;
 }

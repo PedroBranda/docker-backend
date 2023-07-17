@@ -2,8 +2,8 @@ import { IsLatitude, IsLongitude } from 'class-validator';
 
 export class CreateLocationDto {
   @IsLatitude()
-  lat: number;
+  readonly lat: number;
 
   @IsLongitude()
-  lng: number;
+  readonly lng: number;
 }
