@@ -10,6 +10,12 @@ import { AuthController } from './auth/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
+import { ScheduleController } from './schedule/schedule.controller';
+import { ScheduleService } from './schedule/schedule.service';
+import { Schedules } from './schedule/schedule.entity';
+import { Locations } from './location/location.entity';
+import { LocationController } from './location/location.controller';
+import { LocationService } from './location/location.service';
 
 @Module({
   imports: [
@@ -20,24 +26,32 @@ import { AuthGuard } from './auth/auth.guard';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [Users],
+      entities: [Users, Locations, Schedules],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([Users]),
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
     }),
+    TypeOrmModule.forFeature([Users, Locations, Schedules]),
   ],
-  controllers: [AppController, AuthController, UserController],
+  controllers: [
+    AppController,
+    AuthController,
+    UserController,
+    LocationController,
+    ScheduleController,
+  ],
   providers: [
-    AppService,
-    AuthService,
-    UserService,
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
+    AppService,
+    AuthService,
+    UserService,
+    LocationService,
+    ScheduleService,
   ],
 })
 export class AppModule {}

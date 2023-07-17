@@ -8,24 +8,24 @@ import {
 } from 'typeorm';
 import { IsOptional } from 'class-validator';
 
-export enum UserPermission {
-  admin = 0,
-  player = 1,
+export enum UserPermissions {
+  admin,
+  player,
 }
 
 export enum DefaultUsers {
-  admin = 0,
+  admin,
 }
 
 export enum DocumentTypes {
-  rg = 0,
-  cpf = 1,
+  rg,
+  cpf,
 }
 
 export enum UserGenders {
-  male = 0,
-  female = 1,
-  other = 2,
+  male,
+  female,
+  other,
 }
 
 @Entity()
@@ -33,7 +33,7 @@ export class Users {
   @PrimaryGeneratedColumn()
   id?: number;
 
-  @Column('int', { array: true, default: [UserPermission.player] })
+  @Column('int', { array: true, default: [UserPermissions.player] })
   @IsOptional()
   permissions?: number[];
 

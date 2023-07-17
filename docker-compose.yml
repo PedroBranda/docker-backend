@@ -2,7 +2,7 @@ version: '3'
 
 services:
   postgres:
-    image: postgres
+    image: postgis/postgis
     restart: unless-stopped
     environment:
       POSTGRES_USER: admin
@@ -16,13 +16,13 @@ services:
       - '3000:3000'
     depends_on:
       - postgres
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - '5050:80'
-    depends_on:
-      - postgres
+#  pgadmin:
+#    image: dpage/pgadmin4
+#    restart: unless-stopped
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
+#      PGADMIN_DEFAULT_PASSWORD: admin
+#    ports:
+#      - '5050:80'
+#    depends_on:
+#      - postgres
