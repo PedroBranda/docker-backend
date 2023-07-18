@@ -15,4 +15,3 @@ Para rodar a aplicação siga os passos a seguir:
 
 #### TODO:
  - create JSDoc to all service functions and methods
- - create JSDoc to all service functions and methods
