@@ -36,7 +36,9 @@ export class AuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      throw new UnauthorizedException('No authorization');
+      throw new UnauthorizedException({
+        message: 'No authorization',
+      });
     }
 
     try {
@@ -50,7 +52,6 @@ export class AuthGuard implements CanActivate {
     } catch (error) {
       throw new UnauthorizedException({
         message: 'Invalid token',
-        error,
       });
     }
 

@@ -43,4 +43,28 @@ export class GetUserDto {
   @IsOptional()
   @IsEmail()
   readonly email?: string;
+
+  @IsDateString()
+  @IsOptional()
+  readonly createdAt?: Date;
+
+  @IsDateString()
+  @IsOptional()
+  readonly updatedAt?: Date;
+
+  @IsDateString()
+  @IsOptional()
+  readonly deletedAt?: Date;
+
+  @IsNumber()
+  @IsOptional()
+  readonly createdBy?: number;
+
+  @IsNumber()
+  @IsOptional()
+  readonly updatedBy?: number;
+
+  @IsNumber()
+  @IsOptional()
+  readonly deletedBy?: number;
 }

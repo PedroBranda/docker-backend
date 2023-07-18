@@ -11,6 +11,7 @@ import {
 import { IsOptional } from 'class-validator';
 import { DefaultUsers } from '../user/user.entity';
 import { Locations } from '../location/location.entity';
+import { Teams } from '../team/team.entity';
 
 export enum SportTypes {
   soccer,
@@ -23,11 +24,6 @@ export enum SportModalities {
   fieldSoccer,
   swissSoccer,
   indoorSoccer,
-}
-
-export enum TeamSizes {
-  full,
-  half,
 }
 
 export enum SchedulePeriods {
@@ -47,16 +43,27 @@ export class Schedules {
   @IsOptional()
   sportModality?: number;
 
-  @Column({ type: 'enum', enum: TeamSizes, default: TeamSizes.full })
-  @IsOptional()
-  teamSize?: number;
+  @Column()
+  startScheduleDate: Date;
 
   @Column()
-  scheduleDate: Date;
+  endScheduleDate: Date;
 
-  @OneToOne(() => Locations, { cascade: true })
+  @OneToOne(() => Locations, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn()
   location: Locations;
+
+  @OneToOne(() => Teams, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn()
+  team: Teams;
 
   @Column({
     type: 'enum',

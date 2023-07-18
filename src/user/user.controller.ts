@@ -23,13 +23,13 @@ export class UserController {
   }
 
   @Get('me')
-  getMe(@AuthUser('id') id: number) {
-    return this.usersService.findOne(id);
+  getMe(@AuthUser('id') userId: number) {
+    return this.usersService.findOne(userId);
   }
 
   @Get(':id')
-  getOne(@Param('id') id: number) {
-    return this.usersService.findOne(id);
+  getOne(@Param('id') userId: number) {
+    return this.usersService.findOne(userId);
   }
 
   @Public()
@@ -39,12 +39,12 @@ export class UserController {
   }
 
   @Patch()
-  update(@AuthUser('id') id: number, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  update(@AuthUser('id') userId: number, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(userId, updateUserDto);
   }
 
   @Delete()
-  delete(@AuthUser('id') id: number) {
-    return this.usersService.delete(id);
+  delete(@AuthUser('id') userId: number) {
+    return this.usersService.delete(userId);
   }
 }

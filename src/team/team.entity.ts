@@ -3,34 +3,35 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  Index,
 } from 'typeorm';
 import { IsOptional } from 'class-validator';
-import { DefaultUsers } from '../user/user.entity';
-import { Point } from 'geojson';
-
-export enum LocationTypes {
-  user,
-  schedule,
-}
+import { DefaultUsers, Users } from '../user/user.entity';
 
 @Entity()
-export class Locations {
+export class Teams {
   @PrimaryGeneratedColumn()
   id?: number;
 
-  @Index({ spatial: true })
-  @Column({
-    type: 'geography',
-    srid: 4326,
-    spatialFeatureType: 'Point',
-  })
-  point: Point;
+  @Column()
+  teamSizeLimit: number;
 
-  @Column({ type: 'enum', enum: LocationTypes })
-  locationType: number;
+  @ManyToMany(() => Users)
+  @JoinTable({
+    name: 'team_user',
+    joinColumn: {
+      name: 'teamId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'userId',
+      referencedColumnName: 'id',
+    },
+  })
+  users: Users[];
 
   @CreateDateColumn({ type: 'timestamp' })
   @IsOptional()

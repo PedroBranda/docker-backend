@@ -16,6 +16,14 @@ import { Schedules } from './schedule/schedule.entity';
 import { Locations } from './location/location.entity';
 import { LocationController } from './location/location.controller';
 import { LocationService } from './location/location.service';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TeamController } from './team/team.controller';
+import { Teams } from './team/team.entity';
+import { TeamService } from './team/team.service';
+import { TeamRepository } from './team/team.repository';
+import { ScheduleRepository } from './schedule/schedule.repository';
+import { UserRepository } from './user/user.repository';
+import { LocationRepository } from './location/location.repository';
 
 @Module({
   imports: [
@@ -26,14 +34,15 @@ import { LocationService } from './location/location.service';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [Users, Locations, Schedules],
+      entities: [Users, Locations, Schedules, Teams],
       synchronize: true,
     }),
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
     }),
-    TypeOrmModule.forFeature([Users, Locations, Schedules]),
+    ScheduleModule.forRoot(),
+    TypeOrmModule.forFeature([Users, Locations, Schedules, Teams]),
   ],
   controllers: [
     AppController,
@@ -41,6 +50,7 @@ import { LocationService } from './location/location.service';
     UserController,
     LocationController,
     ScheduleController,
+    TeamController,
   ],
   providers: [
     {
@@ -50,8 +60,13 @@ import { LocationService } from './location/location.service';
     AppService,
     AuthService,
     UserService,
+    UserRepository,
     LocationService,
+    LocationRepository,
     ScheduleService,
+    ScheduleRepository,
+    TeamService,
+    TeamRepository,
   ],
 })
 export class AppModule {}

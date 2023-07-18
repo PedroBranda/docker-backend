@@ -1,4 +1,10 @@
-import { IsDateString, IsEnum, IsLatitude, IsLongitude } from 'class-validator';
+import {
+  IsDateString,
+  IsEnum,
+  IsLatitude,
+  IsLongitude,
+  IsNumber,
+} from 'class-validator';
 import { SchedulePeriods, SportTypes } from '../schedule.entity';
 
 export class CreateScheduleDto {
@@ -8,8 +14,11 @@ export class CreateScheduleDto {
   @IsEnum(SchedulePeriods)
   readonly period: SchedulePeriods;
 
+  @IsNumber()
+  readonly teamLimitSize: number;
+
   @IsDateString()
-  readonly scheduleDate: Date;
+  readonly startScheduleDate: Date;
 
   @IsLatitude()
   readonly lat: number;

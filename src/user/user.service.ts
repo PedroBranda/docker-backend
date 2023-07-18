@@ -1,27 +1,21 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Users } from './user.entity';
-import { GetUserDto } from './dto/getUser.dto';
 import { hash } from 'bcrypt';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { UserRepository } from './user.repository';
 
 // TODO: create JSDoc to all service functions and methods
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(Users)
-    private readonly userRepository: Repository<Users>,
+    private readonly repository: UserRepository,
   ) {}
-
-  async hashPassword(password: string): Promise<string> {
-    const saltRounds = 10;
-    return await hash(password, saltRounds);
-  }
 
   async findAll() {
     try {
-      const [result, total] = await this.userRepository.findAndCount({
+      const [result, total] = await this.repository.findAndCount({
         select: [
           'id',
           'firstName',
@@ -47,7 +41,6 @@ export class UserService {
     } catch (error) {
       throw new BadRequestException({
         message: `Unable to list the users`,
-        error,
       });
     }
   }
@@ -55,7 +48,7 @@ export class UserService {
   async findOne(id: number) {
     try {
       return {
-        result: await this.userRepository.findOneOrFail({
+        result: await this.repository.findOneOrFail({
           withDeleted: false,
           where: { id },
           select: [
@@ -81,44 +74,32 @@ export class UserService {
     } catch (error) {
       throw new BadRequestException({
         message: `Unable to list the user: ${id}`,
-        error,
       });
     }
   }
 
-  async findWhere(params: GetUserDto) {
-    try {
-      return {
-        result: await this.userRepository.findOneOrFail({
-          where: { ...params },
-          select: ['id', 'password'],
-        }),
-      };
-    } catch (error) {
-      throw new BadRequestException({
-        message: 'E-mail or password given can be wrong',
-        error,
-      });
-    }
+  async hashPassword(password: string) {
+    const saltRounds = 10;
+    return await hash(password, saltRounds);
   }
 
   async create(user: Users) {
-    const hasUserWithEmail = await this.userRepository.findOne({
+    const hasUserWithEmail = await this.repository.findOne({
       where: { email: user.email },
     });
 
     if (hasUserWithEmail) {
-      throw new BadRequestException(
-        'The e-mail given has already been registered',
-      );
+      throw new BadRequestException({
+        message: 'The e-mail given has already been registered',
+      });
     }
 
     try {
       const hashedPassword = await this.hashPassword(user.password);
 
       return {
-        result: await this.userRepository.save(
-          this.userRepository.create({
+        result: await this.repository.save(
+          this.repository.create({
             ...user,
             password: hashedPassword,
           }),
@@ -127,20 +108,19 @@ export class UserService {
     } catch (error) {
       throw new BadRequestException({
         message: 'Unable to create user',
-        error,
       });
     }
   }
 
   async update(id: number, user: UpdateUserDto) {
     try {
-      await this.userRepository.update(id, {
+      await this.repository.update(id, {
         ...user,
         updatedBy: id,
       });
 
       return {
-        result: await this.userRepository.findOneOrFail({
+        result: await this.repository.findOneOrFail({
           where: { id },
           select: [
             'id',
@@ -162,18 +142,16 @@ export class UserService {
     } catch (error) {
       throw new BadRequestException({
         message: `Unable to edit the user: ${id}`,
-        error,
       });
     }
   }
 
   async delete(id: number) {
     try {
-      await this.userRepository.softDelete({ id });
+      await this.repository.softDelete({ id });
     } catch (error) {
       throw new BadRequestException({
         message: `Unable to delete the user: ${id}`,
-        error,
       });
     }
   }

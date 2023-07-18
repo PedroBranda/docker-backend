@@ -3,28 +3,40 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { compareSync } from 'bcrypt';
 import { AuthDto } from './dto/auth.dto';
+import { UserRepository } from '../user/user.repository';
+import { Users } from '../user/user.entity';
 
 // TODO: create JSDoc to all service functions and methods
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UserService,
+    private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
   ) {}
 
   async validateUser(authDto: AuthDto) {
-    const {
-      result: { id, password },
-    } = await this.userService.findWhere({
-      email: authDto.email,
-    });
-    const passwordMatch = compareSync(authDto.password, password);
+    let user: Users;
 
-    if (!passwordMatch) {
-      throw new BadRequestException('E-mail or password given can be wrong');
+    try {
+      user = await this.userRepository.findOneOrFail({
+        where: { email: authDto.email },
+        select: ['id', 'password'],
+      });
+    } catch (error) {
+      throw new BadRequestException({
+        message: 'E-mail or password given can be wrong',
+      });
     }
 
-    return id;
+    const passwordMatch = compareSync(authDto.password, user.password);
+
+    if (!passwordMatch) {
+      throw new BadRequestException({
+        message: 'E-mail or password given can be wrong',
+      });
+    }
+
+    return user.id;
   }
 
   async sign(id: number) {
@@ -35,7 +47,6 @@ export class AuthService {
     } catch (error) {
       throw new BadRequestException({
         message: 'Error to authenticate the user',
-        error,
       });
     }
   }
