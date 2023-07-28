@@ -1,5 +1,5 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { AuthUserPropertyTypes } from './types/authUserProperty.types';
+import { createParamDecorator, type ExecutionContext } from "@nestjs/common";
+import { type AuthUserPropertyTypes } from "./types/authUserProperty.types";
 
 /**
  * Handler that returns the authenticated user, or some of his properties
@@ -11,5 +11,5 @@ export const AuthUser = createParamDecorator(
     const user = request.user;
 
     return property ? user?.[property] : user;
-  },
+  }
 );

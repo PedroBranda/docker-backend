@@ -5,7 +5,7 @@ import {
   IsPhoneNumber,
   IsString,
   IsStrongPassword,
-} from 'class-validator';
+} from "class-validator";
 
 export class CreateUserDto {
   @IsString()
@@ -26,7 +26,7 @@ export class CreateUserDto {
   @IsDateString()
   readonly birthDate: Date;
 
-  @IsPhoneNumber('BR')
+  @IsPhoneNumber("BR")
   readonly phone: string;
 
   @IsEmail()

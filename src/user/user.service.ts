@@ -1,46 +1,46 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from './user.entity';
-import { hash } from 'bcrypt';
-import { UpdateUserDto } from './dto/updateUser.dto';
-import { UserRepository } from './user.repository';
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Users } from "./user.entity";
+import { hash } from "bcrypt";
+import { type UpdateUserDto } from "./dto/updateUser.dto";
+import { UserRepository } from "./user.repository";
 
 // TODO: create JSDoc to all service functions and methods
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(Users)
-    private readonly repository: UserRepository,
+    private readonly repository: UserRepository
   ) {}
 
   async findAll() {
     try {
       const [result, total] = await this.repository.findAndCount({
         select: [
-          'id',
-          'firstName',
-          'lastName',
-          'email',
-          'document',
-          'gender',
-          'birthDate',
-          'phone',
-          'documentType',
-          'permissions',
-          'createdAt',
-          'createdBy',
-          'updatedAt',
-          'updatedBy',
-          'deletedAt',
-          'deletedBy',
+          "id",
+          "firstName",
+          "lastName",
+          "email",
+          "document",
+          "gender",
+          "birthDate",
+          "phone",
+          "documentType",
+          "permissions",
+          "createdAt",
+          "createdBy",
+          "updatedAt",
+          "updatedBy",
+          "deletedAt",
+          "deletedBy",
         ],
-        order: { id: 'ASC' },
+        order: { id: "ASC" },
       });
 
       return { result, total };
     } catch (error) {
       throw new BadRequestException({
-        message: `Unable to list the users`,
+        message: "Unable to list the users",
       });
     }
   }
@@ -52,22 +52,22 @@ export class UserService {
           withDeleted: false,
           where: { id },
           select: [
-            'id',
-            'firstName',
-            'lastName',
-            'email',
-            'document',
-            'gender',
-            'birthDate',
-            'phone',
-            'documentType',
-            'permissions',
-            'createdAt',
-            'createdBy',
-            'updatedAt',
-            'updatedBy',
-            'deletedAt',
-            'deletedBy',
+            "id",
+            "firstName",
+            "lastName",
+            "email",
+            "document",
+            "gender",
+            "birthDate",
+            "phone",
+            "documentType",
+            "permissions",
+            "createdAt",
+            "createdBy",
+            "updatedAt",
+            "updatedBy",
+            "deletedAt",
+            "deletedBy",
           ],
         }),
       };
@@ -90,7 +90,7 @@ export class UserService {
 
     if (hasUserWithEmail) {
       throw new BadRequestException({
-        message: 'The e-mail given has already been registered',
+        message: "The e-mail given has already been registered",
       });
     }
 
@@ -102,12 +102,12 @@ export class UserService {
           this.repository.create({
             ...user,
             password: hashedPassword,
-          }),
+          })
         ),
       };
     } catch (error) {
       throw new BadRequestException({
-        message: 'Unable to create user',
+        message: "Unable to create user",
       });
     }
   }
@@ -123,19 +123,19 @@ export class UserService {
         result: await this.repository.findOneOrFail({
           where: { id },
           select: [
-            'id',
-            'firstName',
-            'lastName',
-            'email',
-            'document',
-            'documentType',
-            'permissions',
-            'createdAt',
-            'createdBy',
-            'updatedAt',
-            'updatedBy',
-            'deletedAt',
-            'deletedBy',
+            "id",
+            "firstName",
+            "lastName",
+            "email",
+            "document",
+            "documentType",
+            "permissions",
+            "createdAt",
+            "createdBy",
+            "updatedAt",
+            "updatedBy",
+            "deletedAt",
+            "deletedBy",
           ],
         }),
       };

@@ -7,11 +7,11 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from 'typeorm';
-import { IsOptional } from 'class-validator';
-import { DefaultUsers } from '../user/user.entity';
-import { Locations } from '../location/location.entity';
-import { Teams } from '../team/team.entity';
+} from "typeorm";
+import { IsOptional } from "class-validator";
+import { DefaultUsers } from "../user/user.entity";
+import { Locations } from "../location/location.entity";
+import { Teams } from "../team/team.entity";
 
 export enum SportTypes {
   soccer,
@@ -36,10 +36,10 @@ export class Schedules {
   @PrimaryGeneratedColumn()
   id?: number;
 
-  @Column({ type: 'enum', enum: SportTypes })
+  @Column({ type: "enum", enum: SportTypes })
   sportType: number;
 
-  @Column({ type: 'enum', enum: SportModalities, default: null })
+  @Column({ type: "enum", enum: SportModalities, default: null })
   @IsOptional()
   sportModality?: number;
 
@@ -51,36 +51,36 @@ export class Schedules {
 
   @OneToOne(() => Locations, {
     cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   })
   @JoinColumn()
   location: Locations;
 
   @OneToOne(() => Teams, {
     cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   })
   @JoinColumn()
   team: Teams;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     enum: SchedulePeriods,
     default: SchedulePeriods.oneHour,
   })
   period?: number;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: "timestamp" })
   @IsOptional()
   createdAt?: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: "timestamp" })
   @IsOptional()
   updatedAt?: Date;
 
-  @DeleteDateColumn({ type: 'timestamp' })
+  @DeleteDateColumn({ type: "timestamp" })
   @IsOptional()
   deletedAt?: Date;
 

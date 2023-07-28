@@ -5,7 +5,7 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
-} from 'class-validator';
+} from "class-validator";
 
 export class GetUserDto {
   @IsOptional()
@@ -29,7 +29,7 @@ export class GetUserDto {
   readonly birthDate?: Date;
 
   @IsOptional()
-  @IsPhoneNumber('BR')
+  @IsPhoneNumber("BR")
   readonly phone?: string;
 
   @IsOptional()

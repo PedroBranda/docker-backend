@@ -7,9 +7,9 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from 'typeorm';
-import { IsOptional } from 'class-validator';
-import { DefaultUsers, Users } from '../user/user.entity';
+} from "typeorm";
+import { IsOptional } from "class-validator";
+import { DefaultUsers, Users } from "../user/user.entity";
 
 @Entity()
 export class Teams {
@@ -21,27 +21,27 @@ export class Teams {
 
   @ManyToMany(() => Users)
   @JoinTable({
-    name: 'team_user',
+    name: "team_user",
     joinColumn: {
-      name: 'teamId',
-      referencedColumnName: 'id',
+      name: "teamId",
+      referencedColumnName: "id",
     },
     inverseJoinColumn: {
-      name: 'userId',
-      referencedColumnName: 'id',
+      name: "userId",
+      referencedColumnName: "id",
     },
   })
   users: Users[];
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: "timestamp" })
   @IsOptional()
   createdAt?: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: "timestamp" })
   @IsOptional()
   updatedAt?: Date;
 
-  @DeleteDateColumn({ type: 'timestamp' })
+  @DeleteDateColumn({ type: "timestamp" })
   @IsOptional()
   deletedAt?: Date;
 

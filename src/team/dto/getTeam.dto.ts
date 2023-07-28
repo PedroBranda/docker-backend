@@ -1,5 +1,5 @@
-import { IsDateString, IsNumber, IsObject, IsOptional } from 'class-validator';
-import { GetUserDto } from '../../user/dto/getUser.dto';
+import { IsDateString, IsNumber, IsObject, IsOptional } from "class-validator";
+import { GetUserDto } from "../../user/dto/getUser.dto";
 
 export class GetTeamDto {
   @IsNumber()

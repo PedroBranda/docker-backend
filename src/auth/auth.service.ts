@@ -1,17 +1,16 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
-import { compareSync } from 'bcrypt';
-import { AuthDto } from './dto/auth.dto';
-import { UserRepository } from '../user/user.repository';
-import { Users } from '../user/user.entity';
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { compareSync } from "bcrypt";
+import { type AuthDto } from "./dto/auth.dto";
+import { UserRepository } from "../user/user.repository";
+import { type Users } from "../user/user.entity";
 
 // TODO: create JSDoc to all service functions and methods
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService
   ) {}
 
   async validateUser(authDto: AuthDto) {
@@ -20,11 +19,11 @@ export class AuthService {
     try {
       user = await this.userRepository.findOneOrFail({
         where: { email: authDto.email },
-        select: ['id', 'password'],
+        select: ["id", "password"],
       });
     } catch (error) {
       throw new BadRequestException({
-        message: 'E-mail or password given can be wrong',
+        message: "E-mail or password given can be wrong",
       });
     }
 
@@ -32,7 +31,7 @@ export class AuthService {
 
     if (!passwordMatch) {
       throw new BadRequestException({
-        message: 'E-mail or password given can be wrong',
+        message: "E-mail or password given can be wrong",
       });
     }
 
@@ -46,7 +45,7 @@ export class AuthService {
       };
     } catch (error) {
       throw new BadRequestException({
-        message: 'Error to authenticate the user',
+        message: "Error to authenticate the user",
       });
     }
   }

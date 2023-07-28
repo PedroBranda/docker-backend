@@ -1,5 +1,5 @@
-import { Exclude } from 'class-transformer';
-import { IsOptional, IsString } from 'class-validator';
+import { Exclude } from "class-transformer";
+import { IsOptional, IsString } from "class-validator";
 
 export class UpdateUserDto {
   @IsOptional()

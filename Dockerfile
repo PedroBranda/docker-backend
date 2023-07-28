@@ -4,10 +4,12 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install yarn
+
+RUN yarn
 
 COPY . .
 
-RUN npm run build
+RUN yarn build
 
-CMD ["npm", "run", "start:prod"]
+CMD ["yarn", "start:prod"]

@@ -6,45 +6,48 @@ import {
   Param,
   Patch,
   Post,
-} from '@nestjs/common';
-import { CreateUserDto } from './dto/createUser.dto';
-import { UpdateUserDto } from './dto/updateUser.dto';
-import { UserService } from './user.service';
-import { Public } from 'src/decorators/public.decorator';
-import { AuthUser } from '../decorators/authUser.decorator';
+} from "@nestjs/common";
+import { CreateUserDto } from "./dto/createUser.dto";
+import { UpdateUserDto } from "./dto/updateUser.dto";
+import { UserService } from "./user.service";
+import { Public } from "src/decorators/public.decorator";
+import { AuthUser } from "../decorators/authUser.decorator";
 
-@Controller('user')
+@Controller("user")
 export class UserController {
   constructor(private readonly usersService: UserService) {}
 
   @Get()
-  get() {
-    return this.usersService.findAll();
+  async get() {
+    return await this.usersService.findAll();
   }
 
-  @Get('me')
-  getMe(@AuthUser('id') userId: number) {
-    return this.usersService.findOne(userId);
+  @Get("me")
+  async getMe(@AuthUser("id") userId: number) {
+    return await this.usersService.findOne(userId);
   }
 
-  @Get(':id')
-  getOne(@Param('id') userId: number) {
-    return this.usersService.findOne(userId);
+  @Get(":id")
+  async getOne(@Param("id") userId: number) {
+    return await this.usersService.findOne(userId);
   }
 
   @Public()
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    return await this.usersService.create(createUserDto);
   }
 
   @Patch()
-  update(@AuthUser('id') userId: number, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(userId, updateUserDto);
+  async update(
+    @AuthUser("id") userId: number,
+    @Body() updateUserDto: UpdateUserDto
+  ) {
+    return await this.usersService.update(userId, updateUserDto);
   }
 
   @Delete()
-  delete(@AuthUser('id') userId: number) {
-    return this.usersService.delete(userId);
+  async delete(@AuthUser("id") userId: number) {
+    await this.usersService.delete(userId);
   }
 }

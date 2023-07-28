@@ -1,4 +1,4 @@
-export type AuthUserPayload = {
+export interface AuthUserPayload {
   id: number;
   iat: number;
-};
+}

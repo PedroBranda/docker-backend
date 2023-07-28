@@ -1,4 +1,4 @@
-import { IsDateString, IsNumber, IsObject, IsOptional } from 'class-validator';
+import { IsDateString, IsNumber, IsObject, IsOptional } from "class-validator";
 
 export class GetLocationDto {
   @IsNumber()
@@ -8,7 +8,7 @@ export class GetLocationDto {
   @IsObject()
   @IsOptional()
   readonly point?: {
-    type: 'Point';
+    type: "Point";
     coordinates: number;
     bbox: number;
   };

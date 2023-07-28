@@ -1,32 +1,32 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Between, In } from 'typeorm';
-import { Schedules } from './schedule.entity';
-import { CreateScheduleDto } from './dto/createSchedule.dto';
-import { addHours, addMinutes, addSeconds, isBefore } from 'date-fns';
-import { LocationTypes } from '../location/location.entity';
-import { Users } from '../user/user.entity';
-import { TeamRepository } from '../team/team.repository';
-import { ScheduleRepository } from './schedule.repository';
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Between, In } from "typeorm";
+import { Schedules } from "./schedule.entity";
+import { type CreateScheduleDto } from "./dto/createSchedule.dto";
+import { addHours, addMinutes, addSeconds, isBefore } from "date-fns";
+import { LocationTypes } from "../location/location.entity";
+import { type Users } from "../user/user.entity";
+import { TeamRepository } from "../team/team.repository";
+import { ScheduleRepository } from "./schedule.repository";
 
 @Injectable()
 export class ScheduleService {
   constructor(
     @InjectRepository(Schedules)
     private readonly repository: ScheduleRepository,
-    private readonly teamRepository: TeamRepository,
+    private readonly teamRepository: TeamRepository
   ) {}
 
   async findAll() {
     try {
       const [result, total] = await this.repository.findAndCount({
-        relations: ['location', 'team', 'team.users'],
-        order: { createdAt: 'DESC' },
+        relations: ["location", "team", "team.users"],
+        order: { createdAt: "DESC" },
       });
       return { result, total };
     } catch (error) {
       throw new BadRequestException({
-        message: 'Unable to list the schedules',
+        message: "Unable to list the schedules",
       });
     }
   }
@@ -35,18 +35,18 @@ export class ScheduleService {
     try {
       const schedules = await this.repository.find({
         where: { team: { users: { id } } },
-        select: ['id'],
+        select: ["id"],
       });
       const schedulesId = schedules.map((schedule) => schedule.id);
       const [result, total] = await this.repository.findAndCount({
         where: { id: In(schedulesId) },
-        relations: ['location', 'team', 'team.users'],
-        order: { createdAt: 'DESC' },
+        relations: ["location", "team", "team.users"],
+        order: { createdAt: "DESC" },
       });
       return { result, total };
     } catch (error) {
       throw new BadRequestException({
-        message: 'Unable to list mine schedules',
+        message: "Unable to list mine schedules",
       });
     }
   }
@@ -56,7 +56,7 @@ export class ScheduleService {
       isBefore(addMinutes(new Date(params.startScheduleDate), 1), new Date())
     ) {
       throw new BadRequestException({
-        message: 'Schedule date must be greater or equal now',
+        message: "Schedule date must be greater or equal now",
       });
     }
 
@@ -66,14 +66,14 @@ export class ScheduleService {
           createdBy: user.id,
           startScheduleDate: Between(
             new Date(params.startScheduleDate),
-            addHours(new Date(params.startScheduleDate), params.period),
+            addHours(new Date(params.startScheduleDate), params.period)
           ),
         },
         {
           createdBy: user.id,
           endScheduleDate: Between(
             addSeconds(new Date(params.startScheduleDate), 1),
-            addHours(new Date(params.startScheduleDate), params.period),
+            addHours(new Date(params.startScheduleDate), params.period)
           ),
         },
         {
@@ -82,7 +82,7 @@ export class ScheduleService {
           },
           startScheduleDate: Between(
             new Date(params.startScheduleDate),
-            addHours(new Date(params.startScheduleDate), params.period),
+            addHours(new Date(params.startScheduleDate), params.period)
           ),
         },
         {
@@ -91,7 +91,7 @@ export class ScheduleService {
           },
           endScheduleDate: Between(
             addSeconds(new Date(params.startScheduleDate), 1),
-            addHours(new Date(params.startScheduleDate), params.period),
+            addHours(new Date(params.startScheduleDate), params.period)
           ),
         },
       ],
@@ -110,12 +110,12 @@ export class ScheduleService {
         createdBy: user.id,
         endScheduleDate: addHours(
           new Date(params.startScheduleDate),
-          params.period,
+          params.period
         ),
         location: {
           locationType: LocationTypes.schedule,
           point: {
-            type: 'Point',
+            type: "Point",
             coordinates: [params.lat, params.lng],
           },
         },
@@ -130,7 +130,7 @@ export class ScheduleService {
       };
     } catch (error) {
       throw new BadRequestException({
-        message: 'Unable to create the schedule',
+        message: "Unable to create the schedule",
       });
     }
   }
@@ -141,7 +141,7 @@ export class ScheduleService {
     try {
       scheduleToJoin = await this.repository.findOneOrFail({
         where: { id: scheduleId },
-        relations: ['team', 'team.users'],
+        relations: ["team", "team.users"],
       });
     } catch (error) {
       throw new BadRequestException({
@@ -182,8 +182,8 @@ export class ScheduleService {
             new Date(scheduleToJoin.startScheduleDate),
             addHours(
               new Date(scheduleToJoin.startScheduleDate),
-              scheduleToJoin.period,
-            ),
+              scheduleToJoin.period
+            )
           ),
         },
         {
@@ -192,8 +192,8 @@ export class ScheduleService {
             addSeconds(new Date(scheduleToJoin.startScheduleDate), 1),
             addHours(
               new Date(scheduleToJoin.startScheduleDate),
-              scheduleToJoin.period,
-            ),
+              scheduleToJoin.period
+            )
           ),
         },
         {
@@ -204,8 +204,8 @@ export class ScheduleService {
             new Date(scheduleToJoin.startScheduleDate),
             addHours(
               new Date(scheduleToJoin.startScheduleDate),
-              scheduleToJoin.period,
-            ),
+              scheduleToJoin.period
+            )
           ),
         },
         {
@@ -216,8 +216,8 @@ export class ScheduleService {
             addSeconds(new Date(scheduleToJoin.startScheduleDate), 1),
             addHours(
               new Date(scheduleToJoin.startScheduleDate),
-              scheduleToJoin.period,
-            ),
+              scheduleToJoin.period
+            )
           ),
         },
       ],
@@ -239,7 +239,9 @@ export class ScheduleService {
         updatedAt: new Date(),
       });
     } catch (error) {
-      throw new BadRequestException({ message: 'Unable to join the squad' });
+      throw new BadRequestException({
+        message: "Unable to join the squad",
+      });
     }
   }
 
@@ -249,7 +251,7 @@ export class ScheduleService {
     try {
       scheduleToLeave = await this.repository.findOneOrFail({
         where: { id: scheduleId, team: { users: { id: user.id } } },
-        select: ['id', 'endScheduleDate', 'createdBy'],
+        select: ["id", "endScheduleDate", "createdBy"],
       });
     } catch (e) {
       throw new BadRequestException({
@@ -271,11 +273,11 @@ export class ScheduleService {
 
     scheduleToLeave = await this.repository.findOne({
       where: { id: scheduleToLeave.id },
-      relations: ['team', 'team.users'],
+      relations: ["team", "team.users"],
     });
 
     scheduleToLeave.team.users = scheduleToLeave.team.users.filter(
-      (_user) => _user.id !== user.id,
+      (_user) => _user.id !== user.id
     );
 
     try {
@@ -285,7 +287,9 @@ export class ScheduleService {
         updatedAt: new Date(),
       });
     } catch (error) {
-      throw new BadRequestException({ message: 'Unable to leave the squad' });
+      throw new BadRequestException({
+        message: "Unable to leave the squad",
+      });
     }
   }
 
@@ -293,11 +297,13 @@ export class ScheduleService {
     try {
       const { id } = await this.repository.findOneOrFail({
         where: { createdBy: user },
-        order: { createdAt: 'ASC' },
+        order: { createdAt: "ASC" },
       });
       await this.repository.softDelete(id);
     } catch (error) {
-      throw new BadRequestException({ message: 'Unable to delete schedule' });
+      throw new BadRequestException({
+        message: "Unable to delete schedule",
+      });
     }
   }
 
@@ -308,7 +314,7 @@ export class ScheduleService {
           id: scheduleId,
           createdBy: user,
         },
-        order: { createdAt: 'ASC' },
+        order: { createdAt: "ASC" },
       });
       await this.repository.softDelete(scheduleId);
     } catch (error) {

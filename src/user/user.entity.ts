@@ -5,8 +5,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-} from 'typeorm';
-import { IsOptional } from 'class-validator';
+} from "typeorm";
+import { IsOptional } from "class-validator";
 
 export enum UserPermissions {
   admin,
@@ -33,7 +33,7 @@ export class Users {
   @PrimaryGeneratedColumn()
   id?: number;
 
-  @Column('int', { array: true, default: [UserPermissions.player] })
+  @Column("int", { array: true, default: [UserPermissions.player] })
   @IsOptional()
   permissions?: number[];
 
@@ -43,7 +43,7 @@ export class Users {
   @Column()
   lastName: string;
 
-  @Column({ type: 'enum', enum: UserGenders })
+  @Column({ type: "enum", enum: UserGenders })
   gender: number;
 
   @Column()
@@ -52,7 +52,7 @@ export class Users {
   @Column()
   document: string;
 
-  @Column({ type: 'enum', enum: DocumentTypes })
+  @Column({ type: "enum", enum: DocumentTypes })
   documentType: number;
 
   @Column()
@@ -64,15 +64,15 @@ export class Users {
   @Column()
   password: string;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: "timestamp" })
   @IsOptional()
   createdAt?: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: "timestamp" })
   @IsOptional()
   updatedAt?: Date;
 
-  @DeleteDateColumn({ type: 'timestamp' })
+  @DeleteDateColumn({ type: "timestamp" })
   @IsOptional()
   deletedAt?: Date;
 

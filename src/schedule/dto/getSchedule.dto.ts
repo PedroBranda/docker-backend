@@ -1,6 +1,6 @@
-import { IsDateString, IsNumber, IsObject, IsOptional } from 'class-validator';
-import { GetTeamDto } from '../../team/dto/getTeam.dto';
-import { GetLocationDto } from '../../location/dto/getLocation.dto';
+import { IsDateString, IsNumber, IsObject, IsOptional } from "class-validator";
+import { GetTeamDto } from "../../team/dto/getTeam.dto";
+import { GetLocationDto } from "../../location/dto/getLocation.dto";
 
 export class GetScheduleDto {
   @IsNumber()

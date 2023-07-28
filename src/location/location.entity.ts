@@ -6,10 +6,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   Index,
-} from 'typeorm';
-import { IsOptional } from 'class-validator';
-import { DefaultUsers } from '../user/user.entity';
-import { Point } from 'geojson';
+} from "typeorm";
+import { IsOptional } from "class-validator";
+import { DefaultUsers } from "../user/user.entity";
+import { Point } from "geojson";
 
 export enum LocationTypes {
   user,
@@ -23,24 +23,24 @@ export class Locations {
 
   @Index({ spatial: true })
   @Column({
-    type: 'geography',
+    type: "geography",
     srid: 4326,
-    spatialFeatureType: 'Point',
+    spatialFeatureType: "Point",
   })
   point: Point;
 
-  @Column({ type: 'enum', enum: LocationTypes })
+  @Column({ type: "enum", enum: LocationTypes })
   locationType: number;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: "timestamp" })
   @IsOptional()
   createdAt?: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: "timestamp" })
   @IsOptional()
   updatedAt?: Date;
 
-  @DeleteDateColumn({ type: 'timestamp' })
+  @DeleteDateColumn({ type: "timestamp" })
   @IsOptional()
   deletedAt?: Date;
 

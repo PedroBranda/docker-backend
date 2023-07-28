@@ -1,16 +1,16 @@
 import {
-  CanActivate,
-  ExecutionContext,
+  type CanActivate,
+  type ExecutionContext,
   Injectable,
   UnauthorizedException,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
-import { IS_PUBLIC_KEY } from 'src/decorators/public.decorator';
-import { UserService } from 'src/user/user.service';
-import { config } from 'dotenv';
-import { AuthUserPayload } from './types/auth.types';
+} from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { JwtService } from "@nestjs/jwt";
+import { Request } from "express";
+import { IS_PUBLIC_KEY } from "src/decorators/public.decorator";
+import { UserService } from "src/user/user.service";
+import { config } from "dotenv";
+import { AuthUserPayload } from "./types/auth.types";
 
 config();
 
@@ -19,7 +19,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     private readonly reflector: Reflector,
-    private readonly userService: UserService,
+    private readonly userService: UserService
   ) {}
 
   async canActivate(context: ExecutionContext) {
@@ -32,12 +32,12 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    const request: Request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
       throw new UnauthorizedException({
-        message: 'No authorization',
+        message: "No authorization",
       });
     }
 
@@ -48,10 +48,10 @@ export class AuthGuard implements CanActivate {
 
       const user = await this.userService.findOne(id);
 
-      request['user'] = user['result'];
+      request.user = user.result;
     } catch (error) {
       throw new UnauthorizedException({
-        message: 'Invalid token',
+        message: "Invalid token",
       });
     }
 
@@ -59,8 +59,8 @@ export class AuthGuard implements CanActivate {
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    const [type, token] = request.headers.authorization?.split(" ") ?? [];
 
-    return type === 'Bearer' ? token : undefined;
+    return type === "Bearer" ? token : undefined;
   }
 }

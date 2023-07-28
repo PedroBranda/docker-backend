@@ -4,8 +4,8 @@ import {
   IsLatitude,
   IsLongitude,
   IsNumber,
-} from 'class-validator';
-import { SchedulePeriods, SportTypes } from '../schedule.entity';
+} from "class-validator";
+import { SchedulePeriods, SportTypes } from "../schedule.entity";
 
 export class CreateScheduleDto {
   @IsEnum(SportTypes)
