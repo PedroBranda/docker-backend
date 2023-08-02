@@ -1,0 +1,11 @@
+{
+  "INVALID_EMAIL": "invalid {property}",
+  "NOT_EMPTY": "{property} cannot be empty",
+  "INVALID_STRING": "{property} must be a string",
+  "INVALID_LATITUDE": "{property} must be a latitude point",
+  "INVALID_LONGITUDE": "{property} must be a longitude point",
+  "INVALID_NUMBER": "{property} must be a number",
+  "INVALID_OBJECT": "{property} must be a object",
+  "INVALID_DATE_STRING": "{property} must be a ISO8601 date format",
+  "INVALID_ENUM": "{property} must be a valid Enum member"
+}
