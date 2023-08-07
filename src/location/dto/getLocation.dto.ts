@@ -1,24 +1,11 @@
 import { IsDateString, IsNumber, IsObject, IsOptional } from "class-validator";
-import { i18nValidationMessage } from "nestjs-i18n";
-import { I18nTranslations } from "../../generated/i18n.generated";
 
 export class GetLocationDto {
-  @IsNumber(
-    {},
-    {
-      message: i18nValidationMessage<I18nTranslations>(
-        "validation.INVALID_NUMBER"
-      ),
-    }
-  )
+  @IsNumber()
   @IsOptional()
   readonly id?: number;
 
-  @IsObject({
-    message: i18nValidationMessage<I18nTranslations>(
-      "validation.INVALID_OBJECT"
-    ),
-  })
+  @IsObject()
   @IsOptional()
   readonly point?: {
     type: "Point";
@@ -26,80 +13,31 @@ export class GetLocationDto {
     bbox: number;
   };
 
-  @IsNumber(
-    {},
-    {
-      message: i18nValidationMessage<I18nTranslations>(
-        "validation.INVALID_NUMBER"
-      ),
-    }
-  )
+  @IsNumber()
   @IsOptional()
   readonly locationType?: number;
 
-  @IsDateString(
-    {},
-    {
-      message: i18nValidationMessage<I18nTranslations>(
-        "validation.INVALID_DATE_STRING"
-      ),
-    }
-  )
+  @IsDateString()
   @IsOptional()
   readonly createdAt?: Date;
 
-  @IsDateString(
-    {},
-    {
-      message: i18nValidationMessage<I18nTranslations>(
-        "validation.INVALID_DATE_STRING"
-      ),
-    }
-  )
+  @IsDateString()
   @IsOptional()
   readonly updatedAt?: Date;
 
-  @IsDateString(
-    {},
-    {
-      message: i18nValidationMessage<I18nTranslations>(
-        "validation.INVALID_DATE_STRING"
-      ),
-    }
-  )
+  @IsDateString()
   @IsOptional()
   readonly deletedAt?: Date;
 
-  @IsNumber(
-    {},
-    {
-      message: i18nValidationMessage<I18nTranslations>(
-        "validation.INVALID_NUMBER"
-      ),
-    }
-  )
+  @IsNumber()
   @IsOptional()
   readonly createdBy?: number;
 
-  @IsNumber(
-    {},
-    {
-      message: i18nValidationMessage<I18nTranslations>(
-        "validation.INVALID_NUMBER"
-      ),
-    }
-  )
+  @IsNumber()
   @IsOptional()
   readonly updatedBy?: number;
 
-  @IsNumber(
-    {},
-    {
-      message: i18nValidationMessage<I18nTranslations>(
-        "validation.INVALID_NUMBER"
-      ),
-    }
-  )
+  @IsNumber()
   @IsOptional()
   readonly deletedBy?: number;
 }

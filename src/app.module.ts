@@ -24,8 +24,6 @@ import { TeamRepository } from "./team/team.repository";
 import { ScheduleRepository } from "./schedule/schedule.repository";
 import { UserRepository } from "./user/user.repository";
 import { LocationRepository } from "./location/location.repository";
-import { AcceptLanguageResolver, I18nModule, QueryResolver } from "nestjs-i18n";
-import { join } from "path";
 
 @Module({
   imports: [
@@ -44,22 +42,6 @@ import { join } from "path";
       secret: process.env.JWT_SECRET,
     }),
     ScheduleModule.forRoot(),
-    I18nModule.forRoot({
-      fallbackLanguage: "en",
-      fallbacks: {
-        "en-*": "en",
-        pt: "pt-BR",
-      },
-      loaderOptions: {
-        path: join(__dirname, "/i18n/"),
-        watch: true,
-      },
-      typesOutputPath: join(__dirname, "../src/generated/i18n.generated.ts"),
-      resolvers: [
-        { use: QueryResolver, options: ["lang"] },
-        AcceptLanguageResolver,
-      ],
-    }),
     TypeOrmModule.forFeature([Users, Locations, Schedules, Teams]),
   ],
   controllers: [
