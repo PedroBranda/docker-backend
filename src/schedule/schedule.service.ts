@@ -26,7 +26,7 @@ export class ScheduleService {
       return { result, total };
     } catch (error) {
       throw new BadRequestException({
-        message: "Unable to list the schedules",
+        message: "Não foi possível listar os agendamentos",
       });
     }
   }
@@ -46,7 +46,7 @@ export class ScheduleService {
       return { result, total };
     } catch (error) {
       throw new BadRequestException({
-        message: "Unable to list mine schedules",
+        message: "Não foi possível listar seus agendamentos",
       });
     }
   }
@@ -56,7 +56,8 @@ export class ScheduleService {
       isBefore(addMinutes(new Date(params.startScheduleDate), 1), new Date())
     ) {
       throw new BadRequestException({
-        message: "Schedule date must be greater or equal now",
+        message:
+          "A data do agendamento precisa ser maior ou igual a data atual",
       });
     }
 
@@ -100,7 +101,7 @@ export class ScheduleService {
     if (openedSchedule) {
       throw new BadRequestException({
         message:
-          "You can't create a schedule if you're already in a open schedule at that date period",
+          "Você não pode criar um agendamento se já possuir um agendamento aberto no mesmo período",
       });
     }
 
@@ -130,7 +131,7 @@ export class ScheduleService {
       };
     } catch (error) {
       throw new BadRequestException({
-        message: "Unable to create the schedule",
+        message: "Não foi possível criar o agendamento",
       });
     }
   }
@@ -145,19 +146,20 @@ export class ScheduleService {
       });
     } catch (error) {
       throw new BadRequestException({
-        message: `Schedule: ${scheduleId} was not found`,
+        message: `Agendamento: ${scheduleId} não foi encontrado`,
       });
     }
 
     if (scheduleToJoin.endScheduleDate < new Date()) {
       throw new BadRequestException({
-        message: `Schedule: ${scheduleId} is closed`,
+        message: `Agendamento: ${scheduleId} está fechado`,
       });
     }
 
     if (scheduleToJoin.team.users.length >= scheduleToJoin.team.teamSizeLimit) {
       throw new BadRequestException({
-        message: "The schedule team is already full, you can't join it anymore",
+        message:
+          "O time do agendamento está cheio, infelizmente você não pôde entrar",
       });
     }
 
@@ -170,7 +172,7 @@ export class ScheduleService {
 
     if (isInsideTheTeam) {
       throw new BadRequestException({
-        message: "You're already inside the schedule team",
+        message: "Você já está no time deste agendamento",
       });
     }
 
@@ -226,7 +228,7 @@ export class ScheduleService {
     if (openedSchedule) {
       throw new BadRequestException({
         message:
-          "You can't join a schedule if you're already in a open schedule at that date period",
+          "Você não pode entrar no agendamento se já possuir um agendamento aberto no mesmo período",
       });
     }
 
@@ -240,7 +242,7 @@ export class ScheduleService {
       });
     } catch (error) {
       throw new BadRequestException({
-        message: "Unable to join the squad",
+        message: "Não foi possível entrar no time",
       });
     }
   }
@@ -255,19 +257,19 @@ export class ScheduleService {
       });
     } catch (e) {
       throw new BadRequestException({
-        message: `Schedule: ${scheduleId} was not found`,
+        message: `Agendamento: ${scheduleId} não foi encontrado`,
       });
     }
 
     if (scheduleToLeave.endScheduleDate < new Date()) {
       throw new BadRequestException({
-        message: `Schedule: ${scheduleId} is closed`,
+        message: `Agendamento: ${scheduleId} está fechado`,
       });
     }
 
     if (scheduleToLeave.createdBy === user.id) {
       throw new BadRequestException({
-        message: "You can't leave a self created open schedule",
+        message: "Você não pode sair de um agendamento criado por você",
       });
     }
 
@@ -288,7 +290,7 @@ export class ScheduleService {
       });
     } catch (error) {
       throw new BadRequestException({
-        message: "Unable to leave the squad",
+        message: "Não foi possível sair do time",
       });
     }
   }
@@ -302,7 +304,7 @@ export class ScheduleService {
       await this.repository.softDelete(id);
     } catch (error) {
       throw new BadRequestException({
-        message: "Unable to delete schedule",
+        message: "Não foi possível deletar o agendamento",
       });
     }
   }
@@ -319,7 +321,7 @@ export class ScheduleService {
       await this.repository.softDelete(scheduleId);
     } catch (error) {
       throw new BadRequestException({
-        message: `Unable to delete schedule: ${scheduleId}`,
+        message: `Não foi possível deletar o agendamento: ${scheduleId}`,
       });
     }
   }

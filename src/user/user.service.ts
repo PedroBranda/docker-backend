@@ -4,6 +4,7 @@ import { Users } from "./user.entity";
 import { hash } from "bcrypt";
 import { type UpdateUserDto } from "./dto/updateUser.dto";
 import { UserRepository } from "./user.repository";
+import { isAfter, subYears } from "date-fns";
 
 // TODO: create JSDoc to all service functions and methods
 @Injectable()
@@ -40,7 +41,7 @@ export class UserService {
       return { result, total };
     } catch (error) {
       throw new BadRequestException({
-        message: "Unable to list the users",
+        message: "Não foi possível listar os usuários",
       });
     }
   }
@@ -73,7 +74,7 @@ export class UserService {
       };
     } catch (error) {
       throw new BadRequestException({
-        message: `Unable to list the user: ${id}`,
+        message: `Não foi possível listar o usuário: ${id}`,
       });
     }
   }
@@ -84,13 +85,34 @@ export class UserService {
   }
 
   async create(user: Users) {
+    const isUnderAge = isAfter(
+      new Date(user.birthDate),
+      new Date(subYears(new Date().setHours(0, 0, 0, 0), 18))
+    );
+
     const hasUserWithEmail = await this.repository.findOne({
       where: { email: user.email },
     });
 
+    const hasUserWithDocument = await this.repository.findOne({
+      where: { document: user.document },
+    });
+
+    if (isUnderAge) {
+      throw new BadRequestException({
+        message: "Você deve ser maior de idade para se registrar",
+      });
+    }
+
     if (hasUserWithEmail) {
       throw new BadRequestException({
-        message: "The e-mail given has already been registered",
+        message: "O e-mail informado já foi registrado",
+      });
+    }
+
+    if (hasUserWithDocument) {
+      throw new BadRequestException({
+        message: "O documento informado já foi registrado",
       });
     }
 
@@ -107,7 +129,7 @@ export class UserService {
       };
     } catch (error) {
       throw new BadRequestException({
-        message: "Unable to create user",
+        message: "Não foi possível criar o usuário",
       });
     }
   }
@@ -141,7 +163,7 @@ export class UserService {
       };
     } catch (error) {
       throw new BadRequestException({
-        message: `Unable to edit the user: ${id}`,
+        message: `Não foi possível editar o usuário: ${id}`,
       });
     }
   }
@@ -151,7 +173,7 @@ export class UserService {
       await this.repository.softDelete({ id });
     } catch (error) {
       throw new BadRequestException({
-        message: `Unable to delete the user: ${id}`,
+        message: `Não foi possível deletar o usuário: ${id}`,
       });
     }
   }

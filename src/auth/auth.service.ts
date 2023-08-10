@@ -23,7 +23,7 @@ export class AuthService {
       });
     } catch (error) {
       throw new BadRequestException({
-        message: "E-mail or password given can be wrong",
+        message: "E-mail ou senha informados podem estar errados",
       });
     }
 
@@ -31,7 +31,7 @@ export class AuthService {
 
     if (!passwordMatch) {
       throw new BadRequestException({
-        message: "E-mail or password given can be wrong",
+        message: "E-mail ou senha informados podem estar errados",
       });
     }
 
@@ -45,7 +45,7 @@ export class AuthService {
       };
     } catch (error) {
       throw new BadRequestException({
-        message: "Error to authenticate the user",
+        message: "Erro ao autenticar o usuário",
       });
     }
   }

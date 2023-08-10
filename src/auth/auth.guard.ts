@@ -37,7 +37,7 @@ export class AuthGuard implements CanActivate {
 
     if (!token) {
       throw new UnauthorizedException({
-        message: "No authorization",
+        message: "Sem autorização",
       });
     }
 
@@ -51,7 +51,7 @@ export class AuthGuard implements CanActivate {
       request.user = user.result;
     } catch (error) {
       throw new UnauthorizedException({
-        message: "Invalid token",
+        message: "Token inválido",
       });
     }
 
