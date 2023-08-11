@@ -8,6 +8,7 @@ import { LocationTypes } from "../location/location.entity";
 import { type Users } from "../user/user.entity";
 import { TeamRepository } from "../team/team.repository";
 import { ScheduleRepository } from "./schedule.repository";
+import { GetScheduleDto } from "./dto/getSchedule.dto";
 
 @Injectable()
 export class ScheduleService {
@@ -17,9 +18,10 @@ export class ScheduleService {
     private readonly teamRepository: TeamRepository
   ) {}
 
-  async findAll() {
+  async findAll(query: GetScheduleDto) {
     try {
       const [result, total] = await this.repository.findAndCount({
+        where: { ...query },
         relations: ["location", "team", "team.users"],
         order: { createdAt: "DESC" },
       });
@@ -31,10 +33,10 @@ export class ScheduleService {
     }
   }
 
-  async findMine(id) {
+  async findMine(query: GetScheduleDto, id: number) {
     try {
       const schedules = await this.repository.find({
-        where: { team: { users: { id } } },
+        where: { team: { users: { id } }, ...query },
         select: ["id"],
       });
       const schedulesId = schedules.map((schedule) => schedule.id);

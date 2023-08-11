@@ -2,12 +2,12 @@ import { Exclude } from "class-transformer";
 import { IsOptional, IsString } from "class-validator";
 
 export class UpdateUserDto {
+  @IsString({ message: "O campo: 'firstName' deve ser uma string" })
   @IsOptional()
-  @IsString()
   readonly firstName?: string;
 
+  @IsString({ message: "O campo: 'lastName' deve ser uma string" })
   @IsOptional()
-  @IsString()
   readonly lastName?: string;
 
   @Exclude()

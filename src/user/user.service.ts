@@ -5,6 +5,7 @@ import { hash } from "bcrypt";
 import { type UpdateUserDto } from "./dto/updateUser.dto";
 import { UserRepository } from "./user.repository";
 import { isAfter, subYears } from "date-fns";
+import { GetUserDto } from "./dto/getUser.dto";
 
 // TODO: create JSDoc to all service functions and methods
 @Injectable()
@@ -14,9 +15,10 @@ export class UserService {
     private readonly repository: UserRepository
   ) {}
 
-  async findAll() {
+  async findAll(query: GetUserDto) {
     try {
       const [result, total] = await this.repository.findAndCount({
+        where: { ...query },
         select: [
           "id",
           "firstName",

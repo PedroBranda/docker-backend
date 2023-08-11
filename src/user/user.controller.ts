@@ -6,20 +6,22 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 import { CreateUserDto } from "./dto/createUser.dto";
 import { UpdateUserDto } from "./dto/updateUser.dto";
 import { UserService } from "./user.service";
 import { Public } from "src/decorators/public.decorator";
 import { AuthUser } from "../decorators/authUser.decorator";
+import { GetUserDto } from "./dto/getUser.dto";
 
 @Controller("user")
 export class UserController {
   constructor(private readonly usersService: UserService) {}
 
   @Get()
-  async get() {
-    return await this.usersService.findAll();
+  async get(@Query() query: GetUserDto) {
+    return await this.usersService.findAll(query);
   }
 
   @Get("me")

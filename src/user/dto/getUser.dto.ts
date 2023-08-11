@@ -1,70 +1,97 @@
 import {
   IsDateString,
   IsEmail,
+  IsEnum,
   IsNumber,
   IsOptional,
   IsPhoneNumber,
   IsString,
 } from "class-validator";
+import { Transform } from "class-transformer";
+import { DocumentTypes, UserGenders } from "../user.entity";
 
 export class GetUserDto {
+  @IsNumber({}, { message: "O campo: 'id' deve ser um número" })
   @IsOptional()
-  @IsNumber()
+  @Transform((property) => +property.value)
   readonly id?: number;
 
+  @IsString({ message: "O campo: 'document' deve ser uma string" })
   @IsOptional()
-  @IsString()
   readonly document?: string;
 
+  @IsEnum(DocumentTypes, {
+    message: "O campo: 'documentType' deve ser um item do enum DocumentTypes",
+  })
   @IsOptional()
-  @IsNumber()
-  readonly documentType?: number;
+  @Transform((property) => +property.value)
+  readonly documentType?: DocumentTypes;
 
+  @IsEnum(UserGenders, {
+    message: "O campo: 'gender' deve ser um item do enum UserGenders",
+  })
   @IsOptional()
-  @IsNumber()
-  readonly gender?: number;
+  @Transform((property) => +property.value)
+  readonly gender?: UserGenders;
 
+  @IsDateString(
+    {},
+    { message: "O campo: 'birthDate' deve ser uma ISO 8601 string" }
+  )
   @IsOptional()
-  @IsDateString()
   readonly birthDate?: Date;
 
+  @IsPhoneNumber("BR", {
+    message: "O campo: 'phone' deve ser um número telefônico",
+  })
   @IsOptional()
-  @IsPhoneNumber("BR")
   readonly phone?: string;
 
+  @IsString({ message: "O campo: 'firstName' deve ser uma string" })
   @IsOptional()
-  @IsString()
   readonly firstName?: string;
 
+  @IsString({ message: "O campo: 'lastName' deve ser uma string" })
   @IsOptional()
-  @IsString()
   readonly lastName?: string;
 
+  @IsEmail({}, { message: "E-mail inválido" })
   @IsOptional()
-  @IsEmail()
   readonly email?: string;
 
-  @IsDateString()
+  @IsDateString(
+    {},
+    { message: "O campo: 'createdAt' deve ser uma ISO 8601 string" }
+  )
   @IsOptional()
   readonly createdAt?: Date;
 
-  @IsDateString()
+  @IsDateString(
+    {},
+    { message: "O campo: 'updatedAt' deve ser uma ISO 8601 string" }
+  )
   @IsOptional()
   readonly updatedAt?: Date;
 
-  @IsDateString()
+  @IsDateString(
+    {},
+    { message: "O campo: 'deletedAt' deve ser uma ISO 8601 string" }
+  )
   @IsOptional()
   readonly deletedAt?: Date;
 
-  @IsNumber()
+  @IsNumber({}, { message: "O campo: 'createdBy' deve ser um número" })
   @IsOptional()
+  @Transform((property) => +property.value)
   readonly createdBy?: number;
 
-  @IsNumber()
+  @IsNumber({}, { message: "O campo: 'updatedBy' deve ser um número" })
   @IsOptional()
+  @Transform((property) => +property.value)
   readonly updatedBy?: number;
 
-  @IsNumber()
+  @IsNumber({}, { message: "O campo: 'deletedBy' deve ser um número" })
   @IsOptional()
+  @Transform((property) => +property.value)
   readonly deletedBy?: number;
 }
