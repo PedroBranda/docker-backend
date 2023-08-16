@@ -5,11 +5,9 @@ import { LocationRepository } from "./location.repository";
 import { Repository } from "typeorm";
 
 @Injectable()
-export class LocationService extends Repository<Locations> {
+export class LocationService {
   constructor(
     @InjectRepository(Locations)
     private readonly repository: LocationRepository
-  ) {
-    super(repository.target, repository.manager, repository.queryRunner);
-  }
+  ) {}
 }
