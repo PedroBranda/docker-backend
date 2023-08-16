@@ -49,7 +49,7 @@ export class AuthGuard implements CanActivate {
       const user = await this.userService.findOne(id);
 
       request.user = user.result;
-    } catch (error) {
+    } catch (_) {
       throw new UnauthorizedException({
         message: "Token inválido",
       });

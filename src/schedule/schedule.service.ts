@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Between, In } from "typeorm";
+import { Between } from "typeorm";
 import { Schedules } from "./schedule.entity";
 import { type CreateScheduleDto } from "./dto/createSchedule.dto";
 import { addHours, addMinutes, addSeconds, isBefore } from "date-fns";
@@ -13,7 +12,6 @@ import { GetScheduleDto } from "./dto/getSchedule.dto";
 @Injectable()
 export class ScheduleService {
   constructor(
-    @InjectRepository(Schedules)
     private readonly repository: ScheduleRepository,
     private readonly teamRepository: TeamRepository
   ) {}
@@ -22,33 +20,54 @@ export class ScheduleService {
     try {
       const [result, total] = await this.repository.findAndCount({
         where: { ...query },
-        relations: ["location", "team", "team.users"],
-        order: { createdAt: "DESC" },
+        relations: { location: true, team: { users: true }, creator: true },
+        select: {
+          id: true,
+          sportType: true,
+          sportModality: true,
+          startScheduleDate: true,
+          endScheduleDate: true,
+          team: {
+            teamSizeLimit: true,
+            users: { firstName: true, lastName: true },
+          },
+          location: { point: { coordinates: true } },
+          creator: { firstName: true, lastName: true },
+        },
+        order: { startScheduleDate: "DESC" },
       });
       return { result, total };
-    } catch (error) {
+    } catch (_) {
       throw new BadRequestException({
-        message: "Não foi possível listar os agendamentos",
+        message: "Não foi possível listar os times",
       });
     }
   }
 
   async findMine(query: GetScheduleDto, id: number) {
     try {
-      const schedules = await this.repository.find({
-        where: { team: { users: { id } }, ...query },
-        select: ["id"],
-      });
-      const schedulesId = schedules.map((schedule) => schedule.id);
       const [result, total] = await this.repository.findAndCount({
-        where: { id: In(schedulesId) },
-        relations: ["location", "team", "team.users"],
-        order: { createdAt: "DESC" },
+        where: { team: { users: { id } }, ...query },
+        relations: { location: true, team: { users: true }, creator: true },
+        select: {
+          id: true,
+          sportType: true,
+          sportModality: true,
+          startScheduleDate: true,
+          endScheduleDate: true,
+          team: {
+            teamSizeLimit: true,
+            users: { firstName: true, lastName: true },
+          },
+          location: { point: { coordinates: true } },
+          creator: { firstName: true, lastName: true },
+        },
+        order: { startScheduleDate: "DESC" },
       });
       return { result, total };
-    } catch (error) {
+    } catch (_) {
       throw new BadRequestException({
-        message: "Não foi possível listar seus agendamentos",
+        message: "Não foi possível listar seus times",
       });
     }
   }
@@ -98,12 +117,13 @@ export class ScheduleService {
           ),
         },
       ],
+      select: { id: true },
     });
 
     if (openedSchedule) {
       throw new BadRequestException({
         message:
-          "Você não pode criar um agendamento se já possuir um agendamento aberto no mesmo período",
+          "Você não pode criar um time se já possuir um time aberto no mesmo período",
       });
     }
 
@@ -117,6 +137,8 @@ export class ScheduleService {
         ),
         location: {
           locationType: LocationTypes.schedule,
+          createdBy: user.id,
+          updatedBy: user.id,
           point: {
             type: "Point",
             coordinates: [params.lat, params.lng],
@@ -124,16 +146,20 @@ export class ScheduleService {
         },
         team: {
           users: [user],
+          createdBy: user.id,
+          updatedBy: user.id,
           teamSizeLimit: params.teamLimitSize,
         },
       });
 
+      await this.repository.save(scheduleToSave);
+
       return {
-        result: await this.repository.save(scheduleToSave),
+        result: "Time criado com sucesso",
       };
-    } catch (error) {
+    } catch (_) {
       throw new BadRequestException({
-        message: "Não foi possível criar o agendamento",
+        message: "Não foi possível criar o time",
       });
     }
   }
@@ -144,24 +170,26 @@ export class ScheduleService {
     try {
       scheduleToJoin = await this.repository.findOneOrFail({
         where: { id: scheduleId },
-        relations: ["team", "team.users"],
+        relations: {
+          location: true,
+          team: { users: true },
+        },
       });
-    } catch (error) {
+    } catch (_) {
       throw new BadRequestException({
-        message: `Agendamento: ${scheduleId} não foi encontrado`,
+        message: `Time: ${scheduleId} não foi encontrado`,
       });
     }
 
     if (scheduleToJoin.endScheduleDate < new Date()) {
       throw new BadRequestException({
-        message: `Agendamento: ${scheduleId} está fechado`,
+        message: `Time: ${scheduleId} está fechado`,
       });
     }
 
     if (scheduleToJoin.team.users.length >= scheduleToJoin.team.teamSizeLimit) {
       throw new BadRequestException({
-        message:
-          "O time do agendamento está cheio, infelizmente você não pôde entrar",
+        message: "O time está cheio, infelizmente você não pôde entrar",
       });
     }
 
@@ -170,11 +198,12 @@ export class ScheduleService {
         id: scheduleToJoin.team.id,
         users: { id: user.id },
       },
+      select: { id: true },
     });
 
     if (isInsideTheTeam) {
       throw new BadRequestException({
-        message: "Você já está no time deste agendamento",
+        message: "Você já está no time",
       });
     }
 
@@ -225,24 +254,27 @@ export class ScheduleService {
           ),
         },
       ],
+      select: { id: true },
     });
 
     if (openedSchedule) {
       throw new BadRequestException({
         message:
-          "Você não pode entrar no agendamento se já possuir um agendamento aberto no mesmo período",
+          "Você não pode entrar no time se já possuir um time aberto no mesmo período",
       });
     }
 
     scheduleToJoin.team.users.push(user);
 
     try {
-      return await this.repository.save({
+      await this.repository.save({
         ...scheduleToJoin,
         updatedBy: user.id,
         updatedAt: new Date(),
       });
-    } catch (error) {
+
+      return { result: "Você entrou no time com sucesso" };
+    } catch (_) {
       throw new BadRequestException({
         message: "Não foi possível entrar no time",
       });
@@ -259,19 +291,19 @@ export class ScheduleService {
       });
     } catch (e) {
       throw new BadRequestException({
-        message: `Agendamento: ${scheduleId} não foi encontrado`,
+        message: `Time: ${scheduleId} não foi encontrado`,
       });
     }
 
     if (scheduleToLeave.endScheduleDate < new Date()) {
       throw new BadRequestException({
-        message: `Agendamento: ${scheduleId} está fechado`,
+        message: `Time: ${scheduleId} está fechado`,
       });
     }
 
     if (scheduleToLeave.createdBy === user.id) {
       throw new BadRequestException({
-        message: "Você não pode sair de um agendamento criado por você",
+        message: "Você não pode sair de um time criado por você",
       });
     }
 
@@ -285,28 +317,16 @@ export class ScheduleService {
     );
 
     try {
-      return await this.repository.save({
+      await this.repository.save({
         ...scheduleToLeave,
         updatedBy: user.id,
         updatedAt: new Date(),
       });
-    } catch (error) {
+
+      return { result: "Você saiu do time com sucesso" };
+    } catch (_) {
       throw new BadRequestException({
         message: "Não foi possível sair do time",
-      });
-    }
-  }
-
-  async delete(user: number) {
-    try {
-      const { id } = await this.repository.findOneOrFail({
-        where: { createdBy: user },
-        order: { createdAt: "ASC" },
-      });
-      await this.repository.softDelete(id);
-    } catch (error) {
-      throw new BadRequestException({
-        message: "Não foi possível deletar o agendamento",
       });
     }
   }
@@ -318,12 +338,14 @@ export class ScheduleService {
           id: scheduleId,
           createdBy: user,
         },
-        order: { createdAt: "ASC" },
       });
+
       await this.repository.softDelete(scheduleId);
-    } catch (error) {
+
+      return { result: "Time deletado com sucesso" };
+    } catch (_) {
       throw new BadRequestException({
-        message: `Não foi possível deletar o agendamento: ${scheduleId}`,
+        message: `Não foi possível deletar o time: ${scheduleId}`,
       });
     }
   }

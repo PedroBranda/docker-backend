@@ -5,6 +5,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from "typeorm";
 import { IsOptional } from "class-validator";
 
@@ -46,7 +48,7 @@ export class Users {
   @Column({ type: "enum", enum: UserGenders })
   gender: number;
 
-  @Column()
+  @Column({ type: "timestamptz" })
   birthDate: Date;
 
   @Column()
@@ -68,11 +70,11 @@ export class Users {
   @IsOptional()
   createdAt?: Date;
 
-  @UpdateDateColumn({ type: "timestamp" })
+  @UpdateDateColumn({ type: "timestamptz" })
   @IsOptional()
   updatedAt?: Date;
 
-  @DeleteDateColumn({ type: "timestamp" })
+  @DeleteDateColumn({ type: "timestamptz" })
   @IsOptional()
   deletedAt?: Date;
 

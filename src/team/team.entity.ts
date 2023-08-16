@@ -3,8 +3,10 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -19,7 +21,11 @@ export class Teams {
   @Column()
   teamSizeLimit: number;
 
-  @ManyToMany(() => Users)
+  @ManyToMany(() => Users, {
+    cascade: true,
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  })
   @JoinTable({
     name: "team_user",
     joinColumn: {
@@ -33,21 +39,25 @@ export class Teams {
   })
   users: Users[];
 
-  @CreateDateColumn({ type: "timestamp" })
+  @CreateDateColumn({ type: "timestamptz" })
   @IsOptional()
   createdAt?: Date;
 
-  @UpdateDateColumn({ type: "timestamp" })
+  @UpdateDateColumn({ type: "timestamptz" })
   @IsOptional()
   updatedAt?: Date;
 
-  @DeleteDateColumn({ type: "timestamp" })
+  @DeleteDateColumn({ type: "timestamptz" })
   @IsOptional()
   deletedAt?: Date;
 
   @Column({ default: DefaultUsers.admin })
   @IsOptional()
   createdBy?: number;
+
+  @ManyToOne(() => Users)
+  @JoinColumn({ name: "createdBy" })
+  creator: Users;
 
   @Column({ default: DefaultUsers.admin })
   @IsOptional()

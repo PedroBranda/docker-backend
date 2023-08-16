@@ -1,80 +1,54 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
 import { Users } from "./user.entity";
 import { hash } from "bcrypt";
 import { type UpdateUserDto } from "./dto/updateUser.dto";
 import { UserRepository } from "./user.repository";
 import { isAfter, subYears } from "date-fns";
 import { GetUserDto } from "./dto/getUser.dto";
+import { ScheduleRepository } from "../schedule/schedule.repository";
+import { LocationRepository } from "../location/location.repository";
+import { TeamRepository } from "../team/team.repository";
+import { FindOptionsSelect } from "typeorm";
+import { validateCPF } from "../utils/validators";
 
-// TODO: create JSDoc to all service functions and methods
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(Users)
-    private readonly repository: UserRepository
+    private readonly repository: UserRepository,
+    private readonly scheduleRepository: ScheduleRepository,
+    private readonly teamRepository: TeamRepository,
+    private readonly locationRepository: LocationRepository
   ) {}
 
   async findAll(query: GetUserDto) {
     try {
       const [result, total] = await this.repository.findAndCount({
         where: { ...query },
-        select: [
-          "id",
-          "firstName",
-          "lastName",
-          "email",
-          "document",
-          "gender",
-          "birthDate",
-          "phone",
-          "documentType",
-          "permissions",
-          "createdAt",
-          "createdBy",
-          "updatedAt",
-          "updatedBy",
-          "deletedAt",
-          "deletedBy",
-        ],
+        select: {
+          firstName: true,
+          lastName: true,
+        },
         order: { id: "ASC" },
       });
 
       return { result, total };
-    } catch (error) {
+    } catch (_) {
       throw new BadRequestException({
         message: "Não foi possível listar os usuários",
       });
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, select?: FindOptionsSelect<Users>) {
     try {
       return {
         result: await this.repository.findOneOrFail({
           withDeleted: false,
           where: { id },
-          select: [
-            "id",
-            "firstName",
-            "lastName",
-            "email",
-            "document",
-            "gender",
-            "birthDate",
-            "phone",
-            "documentType",
-            "permissions",
-            "createdAt",
-            "createdBy",
-            "updatedAt",
-            "updatedBy",
-            "deletedAt",
-            "deletedBy",
-          ],
+          select: { ...select },
         }),
       };
-    } catch (error) {
+    } catch (_) {
       throw new BadRequestException({
         message: `Não foi possível listar o usuário: ${id}`,
       });
@@ -87,6 +61,8 @@ export class UserService {
   }
 
   async create(user: Users) {
+    const isValidDocument = validateCPF(user.document);
+
     const isUnderAge = isAfter(
       new Date(user.birthDate),
       new Date(subYears(new Date().setHours(0, 0, 0, 0), 18))
@@ -99,6 +75,12 @@ export class UserService {
     const hasUserWithDocument = await this.repository.findOne({
       where: { document: user.document },
     });
+
+    if (!isValidDocument) {
+      throw new BadRequestException({
+        message: "Você deve informar um CPF válido",
+      });
+    }
 
     if (isUnderAge) {
       throw new BadRequestException({
@@ -120,16 +102,16 @@ export class UserService {
 
     try {
       const hashedPassword = await this.hashPassword(user.password);
-
+      await this.repository.save(
+        this.repository.create({
+          ...user,
+          password: hashedPassword,
+        })
+      );
       return {
-        result: await this.repository.save(
-          this.repository.create({
-            ...user,
-            password: hashedPassword,
-          })
-        ),
+        result: "Usuário criado com sucesso",
       };
-    } catch (error) {
+    } catch (_) {
       throw new BadRequestException({
         message: "Não foi possível criar o usuário",
       });
@@ -144,26 +126,9 @@ export class UserService {
       });
 
       return {
-        result: await this.repository.findOneOrFail({
-          where: { id },
-          select: [
-            "id",
-            "firstName",
-            "lastName",
-            "email",
-            "document",
-            "documentType",
-            "permissions",
-            "createdAt",
-            "createdBy",
-            "updatedAt",
-            "updatedBy",
-            "deletedAt",
-            "deletedBy",
-          ],
-        }),
+        result: "Usuário atualizado com sucesso",
       };
-    } catch (error) {
+    } catch (_) {
       throw new BadRequestException({
         message: `Não foi possível editar o usuário: ${id}`,
       });
@@ -172,8 +137,25 @@ export class UserService {
 
   async delete(id: number) {
     try {
+      const selfOpenedSchedules = await this.scheduleRepository.find({
+        where: { createdBy: id },
+        relations: { location: true, team: true },
+        select: { id: true, location: { id: true }, team: { id: true } },
+      });
+
+      const schedulesId = selfOpenedSchedules.map((schedule) => schedule.id);
+      const teamsId = selfOpenedSchedules.map(({ team }) => team.id);
+      const locationsId = selfOpenedSchedules.map(
+        ({ location }) => location.id
+      );
+
+      await this.scheduleRepository.softDelete(schedulesId);
+      await this.teamRepository.softDelete(teamsId);
+      await this.locationRepository.softDelete(locationsId);
       await this.repository.softDelete({ id });
-    } catch (error) {
+
+      return { result: "Usuário deletado com sucesso" };
+    } catch (_) {
       throw new BadRequestException({
         message: `Não foi possível deletar o usuário: ${id}`,
       });

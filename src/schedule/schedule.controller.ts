@@ -20,7 +20,6 @@ export class ScheduleController {
 
   @Get()
   async get(@Query() query: GetScheduleDto) {
-    console.log({ query });
     return await this.service.findAll(query);
   }
 
@@ -56,16 +55,11 @@ export class ScheduleController {
     return await this.service.leaveSchedule(user, scheduleId);
   }
 
-  @Delete()
-  async delete(@AuthUser("id") userId: number) {
-    await this.service.delete(userId);
-  }
-
   @Delete(":scheduleId")
   async deleteByScheduleId(
     @AuthUser("id") userId: number,
     @Param("scheduleId") scheduleId: number
   ) {
-    await this.service.deleteByScheduleId(userId, scheduleId);
+    return await this.service.deleteByScheduleId(userId, scheduleId);
   }
 }

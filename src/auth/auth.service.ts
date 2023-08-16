@@ -21,7 +21,7 @@ export class AuthService {
         where: { email: authDto.email },
         select: ["id", "password"],
       });
-    } catch (error) {
+    } catch (_) {
       throw new BadRequestException({
         message: "E-mail ou senha informados podem estar errados",
       });
@@ -43,7 +43,7 @@ export class AuthService {
       return {
         token: this.jwtService.sign({ id }),
       };
-    } catch (error) {
+    } catch (_) {
       throw new BadRequestException({
         message: "Erro ao autenticar o usuário",
       });

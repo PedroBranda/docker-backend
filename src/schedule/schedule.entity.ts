@@ -4,20 +4,18 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { IsOptional } from "class-validator";
-import { DefaultUsers } from "../user/user.entity";
+import { DefaultUsers, Users } from "../user/user.entity";
 import { Locations } from "../location/location.entity";
 import { Teams } from "../team/team.entity";
 
 export enum SportTypes {
   soccer,
-  volleyball,
-  basketball,
-  football,
 }
 
 export enum SportModalities {
@@ -43,13 +41,13 @@ export class Schedules {
   @IsOptional()
   sportModality?: number;
 
-  @Column()
+  @Column({ type: "timestamptz" })
   startScheduleDate: Date;
 
-  @Column()
+  @Column({ type: "timestamptz" })
   endScheduleDate: Date;
 
-  @OneToOne(() => Locations, {
+  @OneToOne(() => Locations, (location) => location.id, {
     cascade: true,
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
@@ -57,12 +55,12 @@ export class Schedules {
   @JoinColumn()
   location: Locations;
 
-  @OneToOne(() => Teams, {
+  @OneToOne(() => Teams, (team) => team.id, {
     cascade: true,
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   })
-  @JoinColumn()
+  @JoinColumn({ name: "id", referencedColumnName: "id" })
   team: Teams;
 
   @Column({
@@ -72,21 +70,25 @@ export class Schedules {
   })
   period?: number;
 
-  @CreateDateColumn({ type: "timestamp" })
+  @CreateDateColumn({ type: "timestamptz" })
   @IsOptional()
   createdAt?: Date;
 
-  @UpdateDateColumn({ type: "timestamp" })
+  @UpdateDateColumn({ type: "timestamptz" })
   @IsOptional()
   updatedAt?: Date;
 
-  @DeleteDateColumn({ type: "timestamp" })
+  @DeleteDateColumn({ type: "timestamptz" })
   @IsOptional()
   deletedAt?: Date;
 
   @Column({ default: DefaultUsers.admin })
   @IsOptional()
   createdBy?: number;
+
+  @ManyToOne(() => Users)
+  @JoinColumn({ name: "createdBy" })
+  creator: Users;
 
   @Column({ default: DefaultUsers.admin })
   @IsOptional()

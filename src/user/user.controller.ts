@@ -26,12 +26,23 @@ export class UserController {
 
   @Get("me")
   async getMe(@AuthUser("id") userId: number) {
-    return await this.usersService.findOne(userId);
+    return await this.usersService.findOne(userId, {
+      firstName: true,
+      lastName: true,
+      birthDate: true,
+      document: true,
+      gender: true,
+      phone: true,
+      email: true,
+    });
   }
 
   @Get(":id")
   async getOne(@Param("id") userId: number) {
-    return await this.usersService.findOne(userId);
+    return await this.usersService.findOne(userId, {
+      firstName: true,
+      lastName: true,
+    });
   }
 
   @Public()
@@ -50,6 +61,6 @@ export class UserController {
 
   @Delete()
   async delete(@AuthUser("id") userId: number) {
-    await this.usersService.delete(userId);
+    return await this.usersService.delete(userId);
   }
 }
