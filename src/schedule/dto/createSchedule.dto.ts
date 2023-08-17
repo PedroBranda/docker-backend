@@ -13,18 +13,23 @@ import {
 
 export class CreateScheduleDto {
   @IsEnum(SportTypes, {
-    message: "O campo: 'sportType' deve ser um item do enum SportTypes",
+    message: `O campo: 'sportType' deve ser um item do enum SportTypes: ${Object.values(
+      SportTypes
+    ).filter((value) => typeof value === "number")}`,
   })
   readonly sportType: SportTypes;
 
   @IsEnum(SportModalities, {
-    message:
-      "O campo: 'sportModality' deve ser um item do enum SportModalities",
+    message: `O campo: 'sportModality' deve ser um item do enum SportModalities: ${Object.values(
+      SportModalities
+    ).filter((value) => typeof value === "number")}`,
   })
   readonly sportModality: SportModalities;
 
   @IsEnum(SchedulePeriods, {
-    message: "O campo: 'period' deve ser um item do enum SchedulePeriods",
+    message: `O campo: 'period' deve ser um item do enum SchedulePeriods: ${Object.values(
+      SchedulePeriods
+    ).filter((value) => typeof value === "number")}`,
   })
   readonly period: SchedulePeriods;
 
