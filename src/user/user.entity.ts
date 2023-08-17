@@ -1,22 +1,17 @@
 import {
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-  CreateDateColumn,
   UpdateDateColumn,
-  DeleteDateColumn,
-  ManyToOne,
-  JoinColumn,
 } from "typeorm";
 import { IsOptional } from "class-validator";
+import { AbstractEntity } from "../abstract/abstract.entity";
 
 export enum UserPermissions {
   admin,
   player,
-}
-
-export enum DefaultUsers {
-  admin,
 }
 
 export enum DocumentTypes {
@@ -31,10 +26,7 @@ export enum UserGenders {
 }
 
 @Entity()
-export class Users {
-  @PrimaryGeneratedColumn()
-  id?: number;
-
+export class Users extends AbstractEntity {
   @Column("int", { array: true, default: [UserPermissions.player] })
   @IsOptional()
   permissions?: number[];
@@ -65,28 +57,4 @@ export class Users {
 
   @Column()
   password: string;
-
-  @CreateDateColumn({ type: "timestamp" })
-  @IsOptional()
-  createdAt?: Date;
-
-  @UpdateDateColumn({ type: "timestamptz" })
-  @IsOptional()
-  updatedAt?: Date;
-
-  @DeleteDateColumn({ type: "timestamptz" })
-  @IsOptional()
-  deletedAt?: Date;
-
-  @Column({ default: DefaultUsers.admin })
-  @IsOptional()
-  createdBy?: number;
-
-  @Column({ default: DefaultUsers.admin })
-  @IsOptional()
-  updatedBy?: number;
-
-  @Column({ default: null })
-  @IsOptional()
-  deletedBy?: number;
 }

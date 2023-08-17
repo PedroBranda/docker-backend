@@ -10,6 +10,7 @@ import { LocationRepository } from "../location/location.repository";
 import { TeamRepository } from "../team/team.repository";
 import { FindOptionsSelect } from "typeorm";
 import { validateCPF } from "../utils/validators";
+import { CreateUserDto } from "./dto/createUser.dto";
 
 @Injectable()
 export class UserService {
@@ -60,7 +61,7 @@ export class UserService {
     return await hash(password, saltRounds);
   }
 
-  async create(user: Users) {
+  async create(user: CreateUserDto) {
     const isValidDocument = validateCPF(user.document);
 
     const isUnderAge = isAfter(
@@ -74,6 +75,10 @@ export class UserService {
 
     const hasUserWithDocument = await this.repository.findOne({
       where: { document: user.document },
+    });
+
+    const hasUserWithPhone = await this.repository.findOne({
+      where: { phone: user.phone },
     });
 
     if (!isValidDocument) {
@@ -97,6 +102,12 @@ export class UserService {
     if (hasUserWithDocument) {
       throw new BadRequestException({
         message: "O documento informado já foi registrado",
+      });
+    }
+
+    if (hasUserWithPhone) {
+      throw new BadRequestException({
+        message: "O telefone informado já foi registrado",
       });
     }
 

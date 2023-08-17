@@ -20,7 +20,7 @@ export class ScheduleController {
 
   @Get()
   async get(@Query() query: GetScheduleDto) {
-    return await this.service.findAll(query);
+    return await this.service.findAll();
   }
 
   @Get("me")
@@ -28,7 +28,7 @@ export class ScheduleController {
     @Query() query: GetScheduleDto,
     @AuthUser("id") userId: number
   ) {
-    return await this.service.findMine(query, userId);
+    return await this.service.findMine(userId);
   }
 
   @Post()

@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { Between } from "typeorm";
+import { Between, In } from "typeorm";
 import { Schedules } from "./schedule.entity";
 import { type CreateScheduleDto } from "./dto/createSchedule.dto";
 import { addHours, addMinutes, addSeconds, isBefore } from "date-fns";
@@ -7,7 +7,6 @@ import { LocationTypes } from "../location/location.entity";
 import { type Users } from "../user/user.entity";
 import { TeamRepository } from "../team/team.repository";
 import { ScheduleRepository } from "./schedule.repository";
-import { GetScheduleDto } from "./dto/getSchedule.dto";
 
 @Injectable()
 export class ScheduleService {
@@ -16,10 +15,10 @@ export class ScheduleService {
     private readonly teamRepository: TeamRepository
   ) {}
 
-  async findAll(query: GetScheduleDto) {
+  async findAll() {
     try {
       const [result, total] = await this.repository.findAndCount({
-        where: { ...query },
+        where: {},
         relations: { location: true, team: { users: true }, creator: true },
         select: {
           id: true,
@@ -44,10 +43,15 @@ export class ScheduleService {
     }
   }
 
-  async findMine(query: GetScheduleDto, id: number) {
+  async findMine(id: number) {
     try {
+      const teams = await this.teamRepository.find({
+        where: { users: { id } },
+        select: { id: true },
+      });
+
       const [result, total] = await this.repository.findAndCount({
-        where: { team: { users: { id } }, ...query },
+        where: { team: { id: In(teams.map((team) => team.id)) } },
         relations: { location: true, team: { users: true }, creator: true },
         select: {
           id: true,
@@ -64,6 +68,7 @@ export class ScheduleService {
         },
         order: { startScheduleDate: "DESC" },
       });
+
       return { result, total };
     } catch (_) {
       throw new BadRequestException({
@@ -131,6 +136,7 @@ export class ScheduleService {
       const scheduleToSave = this.repository.create({
         ...params,
         createdBy: user.id,
+        updatedBy: user.id,
         endScheduleDate: addHours(
           new Date(params.startScheduleDate),
           params.period

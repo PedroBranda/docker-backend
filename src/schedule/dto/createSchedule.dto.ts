@@ -5,13 +5,23 @@ import {
   IsLongitude,
   IsNumber,
 } from "class-validator";
-import { SchedulePeriods, SportTypes } from "../schedule.entity";
+import {
+  SchedulePeriods,
+  SportModalities,
+  SportTypes,
+} from "../schedule.entity";
 
 export class CreateScheduleDto {
   @IsEnum(SportTypes, {
     message: "O campo: 'sportType' deve ser um item do enum SportTypes",
   })
   readonly sportType: SportTypes;
+
+  @IsEnum(SportModalities, {
+    message:
+      "O campo: 'sportModality' deve ser um item do enum SportModalities",
+  })
+  readonly sportModality: SportModalities;
 
   @IsEnum(SchedulePeriods, {
     message: "O campo: 'period' deve ser um item do enum SchedulePeriods",
