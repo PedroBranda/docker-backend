@@ -19,16 +19,22 @@ export class CreateUserDto {
   readonly document: string;
 
   @IsEnum(DocumentTypes, {
-    message: `O campo: 'documentType' deve ser um item do enum DocumentTypes: ${Object.values(
+    message: `O campo: 'documentType' deve ser um item do enum DocumentTypes:${Object.values(
       DocumentTypes
-    ).filter((value) => typeof value === "number")}`,
+    )
+      .filter((value) => typeof value === "number")
+      .map((value) => ` ${value}`)
+      .join(",")}`,
   })
   readonly documentType: DocumentTypes;
 
   @IsEnum(UserGenders, {
-    message: `O campo: 'gender' deve ser um item do enum UserGenders: ${Object.values(
+    message: `O campo: 'gender' deve ser um item do enum UserGenders:${Object.values(
       UserGenders
-    ).filter((value) => typeof value === "number")}`,
+    )
+      .filter((value) => typeof value === "number")
+      .map((value) => ` ${value}`)
+      .join(",")}`,
   })
   readonly gender: UserGenders;
 
