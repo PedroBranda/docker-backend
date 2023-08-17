@@ -1,24 +1,46 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { Between, In } from "typeorm";
+import { And, Between, In, LessThanOrEqual, MoreThan } from "typeorm";
 import { Schedules } from "./schedule.entity";
 import { type CreateScheduleDto } from "./dto/createSchedule.dto";
-import { addHours, addMinutes, addSeconds, isBefore } from "date-fns";
+import {
+  addHours,
+  addMinutes,
+  addSeconds,
+  endOfDay,
+  isBefore,
+  startOfDay,
+} from "date-fns";
 import { LocationTypes } from "../location/location.entity";
 import { type Users } from "../user/user.entity";
 import { TeamRepository } from "../team/team.repository";
 import { ScheduleRepository } from "./schedule.repository";
+import { LocationRepository } from "../location/location.repository";
+import { GetScheduleDto } from "./dto/getSchedule.dto";
 
 @Injectable()
 export class ScheduleService {
   constructor(
     private readonly repository: ScheduleRepository,
-    private readonly teamRepository: TeamRepository
+    private readonly teamRepository: TeamRepository,
+    private readonly locationRepository: LocationRepository
   ) {}
 
-  async findAll() {
+  async findAll(query: GetScheduleDto) {
     try {
       const [result, total] = await this.repository.findAndCount({
-        where: {},
+        where: {
+          id: query.id || undefined,
+          sportType: query.sportType || undefined,
+          sportModality: query.sportModality || undefined,
+          startScheduleDate: this.repository.createStartScheduleDateFilter({
+            opened: query.opened,
+            startScheduleDate: query.startScheduleDate,
+          }),
+          period: query.period || undefined,
+          creator: { id: query.createdBy } || undefined,
+          updater: { id: query.updatedBy } || undefined,
+          deleter: { id: query.deletedBy } || undefined,
+        },
         relations: { location: true, team: { users: true }, creator: true },
         select: {
           id: true,
@@ -43,7 +65,7 @@ export class ScheduleService {
     }
   }
 
-  async findMine(id: number) {
+  async findMine(id: number, query: GetScheduleDto) {
     try {
       const teams = await this.teamRepository.find({
         where: { users: { id } },
@@ -51,7 +73,20 @@ export class ScheduleService {
       });
 
       const [result, total] = await this.repository.findAndCount({
-        where: { team: { id: In(teams.map((team) => team.id)) } },
+        where: {
+          team: { id: In(teams.map((team) => team.id)) },
+          id: query.id || undefined,
+          sportType: query.sportType || undefined,
+          sportModality: query.sportModality || undefined,
+          startScheduleDate: this.repository.createStartScheduleDateFilter({
+            opened: query.opened,
+            startScheduleDate: query.startScheduleDate,
+          }),
+          period: query.period || undefined,
+          creator: { id: query.createdBy } || undefined,
+          updater: { id: query.updatedBy } || undefined,
+          deleter: { id: query.deletedBy } || undefined,
+        },
         relations: { location: true, team: { users: true }, creator: true },
         select: {
           id: true,
@@ -183,13 +218,13 @@ export class ScheduleService {
       });
     } catch (_) {
       throw new BadRequestException({
-        message: `Time: ${scheduleId} não foi encontrado`,
+        message: `Agendamento do time: ${scheduleId} não foi encontrado`,
       });
     }
 
     if (scheduleToJoin.endScheduleDate < new Date()) {
       throw new BadRequestException({
-        message: `Time: ${scheduleId} está fechado`,
+        message: `Agendamento do time: ${scheduleId} está fechado`,
       });
     }
 
@@ -293,17 +328,17 @@ export class ScheduleService {
     try {
       scheduleToLeave = await this.repository.findOneOrFail({
         where: { id: scheduleId, team: { users: { id: user.id } } },
-        select: ["id", "endScheduleDate", "createdBy"],
+        select: { id: true, endScheduleDate: true, createdBy: true },
       });
     } catch (e) {
       throw new BadRequestException({
-        message: `Time: ${scheduleId} não foi encontrado`,
+        message: `Você não participa do time: ${scheduleId}`,
       });
     }
 
     if (scheduleToLeave.endScheduleDate < new Date()) {
       throw new BadRequestException({
-        message: `Time: ${scheduleId} está fechado`,
+        message: `Agendamento do time: ${scheduleId} está fechado`,
       });
     }
 
@@ -315,7 +350,7 @@ export class ScheduleService {
 
     scheduleToLeave = await this.repository.findOne({
       where: { id: scheduleToLeave.id },
-      relations: ["team", "team.users"],
+      relations: { team: { users: true }, location: true },
     });
 
     scheduleToLeave.team.users = scheduleToLeave.team.users.filter(
@@ -339,14 +374,16 @@ export class ScheduleService {
 
   async deleteByScheduleId(user: number, scheduleId: number) {
     try {
-      await this.repository.findOneOrFail({
+      const schedule = await this.repository.findOneOrFail({
         where: {
           id: scheduleId,
           createdBy: user,
         },
+        relations: { team: true, location: true },
+        select: { id: true, location: { id: true }, team: { id: true } },
       });
 
-      await this.repository.softDelete(scheduleId);
+      await this.repository.softRemove(schedule);
 
       return { result: "Time deletado com sucesso" };
     } catch (_) {

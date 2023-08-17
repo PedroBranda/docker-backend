@@ -41,19 +41,11 @@ export class Schedules extends AbstractEntity {
 
   // RELATIONS
 
-  @OneToOne(() => Locations, (location) => location.id, {
-    cascade: true,
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
-  })
+  @OneToOne(() => Locations, (location) => location.schedule, { cascade: true })
   @JoinColumn()
   location: Locations;
 
-  @OneToOne(() => Teams, (team) => team.id, {
-    cascade: true,
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
-  })
+  @OneToOne(() => Teams, (team) => team.schedule, { cascade: true })
   @JoinColumn()
   team: Teams;
 }

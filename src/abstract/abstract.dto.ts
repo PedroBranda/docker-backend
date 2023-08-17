@@ -1,17 +1,11 @@
-import { IsDateString, IsNumber, IsObject, IsOptional } from "class-validator";
-import { GetUserDto } from "../../user/dto/getUser.dto";
+import { IsDateString, IsNumber, IsOptional } from "class-validator";
 import { Transform } from "class-transformer";
 
-export class GetTeamDto {
+export abstract class AbstractDto {
   @IsNumber({}, { message: "O campo: 'id' deve ser um número" })
   @IsOptional()
   @Transform(({ value }) => +value)
-  id?: number;
-
-  @IsNumber({}, { message: "O campo: 'teamSizeLimit' deve ser um número" })
-  @IsOptional()
-  @Transform(({ value }) => +value)
-  teamSizeLimit?: number;
+  readonly id?: number;
 
   @IsDateString(
     {},

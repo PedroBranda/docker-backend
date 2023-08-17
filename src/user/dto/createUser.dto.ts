@@ -42,7 +42,7 @@ export class CreateUserDto {
     {},
     { message: "O campo: 'birthDate' deve ser uma ISO 8601 string" }
   )
-  readonly birthDate: Date;
+  readonly birthDate: string;
 
   @IsPhoneNumber("BR", {
     message: "O campo: 'phone' deve ser um número telefônico",

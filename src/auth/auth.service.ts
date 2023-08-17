@@ -19,7 +19,7 @@ export class AuthService {
     try {
       user = await this.userRepository.findOneOrFail({
         where: { email: authDto.email },
-        select: ["id", "password"],
+        select: { id: true, password: true },
       });
     } catch (_) {
       throw new BadRequestException({

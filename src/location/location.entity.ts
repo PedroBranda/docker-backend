@@ -1,6 +1,7 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, OneToOne } from "typeorm";
 import { Point } from "geojson";
 import { AbstractEntity } from "../abstract/abstract.entity";
+import { Schedules } from "../schedule/schedule.entity";
 
 export enum LocationTypes {
   user,
@@ -19,4 +20,9 @@ export class Locations extends AbstractEntity {
 
   @Column({ type: "enum", enum: LocationTypes })
   locationType: number;
+
+  // RELATIONS
+
+  @OneToOne(() => Schedules, (schedule) => schedule.location)
+  schedule: Schedules;
 }

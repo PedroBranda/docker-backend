@@ -24,7 +24,6 @@ export class UserService {
   async findAll(query: GetUserDto) {
     try {
       const [result, total] = await this.repository.findAndCount({
-        where: { ...query },
         select: {
           firstName: true,
           lastName: true,
@@ -148,22 +147,15 @@ export class UserService {
 
   async delete(id: number) {
     try {
+      await this.repository.softDelete({ id });
+
       const selfOpenedSchedules = await this.scheduleRepository.find({
         where: { createdBy: id },
         relations: { location: true, team: true },
         select: { id: true, location: { id: true }, team: { id: true } },
       });
 
-      const schedulesId = selfOpenedSchedules.map((schedule) => schedule.id);
-      const teamsId = selfOpenedSchedules.map(({ team }) => team.id);
-      const locationsId = selfOpenedSchedules.map(
-        ({ location }) => location.id
-      );
-
-      await this.scheduleRepository.softDelete(schedulesId);
-      await this.teamRepository.softDelete(teamsId);
-      await this.locationRepository.softDelete(locationsId);
-      await this.repository.softDelete({ id });
+      await this.scheduleRepository.softRemove(selfOpenedSchedules);
 
       return { result: "Usuário deletado com sucesso" };
     } catch (_) {

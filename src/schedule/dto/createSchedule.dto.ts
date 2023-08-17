@@ -49,7 +49,7 @@ export class CreateScheduleDto {
     {},
     { message: "O campo: 'startScheduleDate' deve ser uma ISO 8601 string" }
   )
-  readonly startScheduleDate: Date;
+  readonly startScheduleDate: string;
 
   @IsLatitude({ message: "O campo 'lat' deve ser um ponto de latitude" })
   readonly lat: number;
