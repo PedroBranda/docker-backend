@@ -1,11 +1,4 @@
-import {
-  IsBoolean,
-  IsBooleanString,
-  IsDateString,
-  IsEnum,
-  IsNumber,
-  IsOptional,
-} from "class-validator";
+import { IsBoolean, IsDateString, IsEnum, IsOptional } from "class-validator";
 import {
   SchedulePeriods,
   SportModalities,
@@ -71,5 +64,5 @@ export class GetScheduleDto extends AbstractDto {
   @Transform(({ value }) =>
     value === "true" ? true : value === "false" ? false : ""
   )
-  readonly open: boolean;
+  readonly isOpen: boolean;
 }

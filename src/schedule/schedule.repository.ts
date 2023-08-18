@@ -12,14 +12,13 @@ export class ScheduleRepository extends Repository<Schedules> {
   }
 
   createStartScheduleDateFilter({
-    open,
+    isOpen,
     startScheduleDate,
   }: {
-    open: boolean;
+    isOpen: boolean;
     startScheduleDate: string;
   }) {
-    if (open && startScheduleDate) {
-      console.log(1);
+    if (isOpen && startScheduleDate) {
       return And(
         MoreThan(new Date()),
         Between(
@@ -29,13 +28,11 @@ export class ScheduleRepository extends Repository<Schedules> {
       );
     }
 
-    if (open && !startScheduleDate) {
-      console.log(2);
+    if (isOpen && !startScheduleDate) {
       return MoreThan(new Date());
     }
 
-    if (!open && startScheduleDate) {
-      console.log(3);
+    if (isOpen === false && startScheduleDate) {
       return And(
         LessThanOrEqual(new Date()),
         Between(
@@ -45,12 +42,17 @@ export class ScheduleRepository extends Repository<Schedules> {
       );
     }
 
-    if (!open && open !== undefined) {
-      console.log(4);
+    if (isOpen === false && !startScheduleDate) {
       return LessThanOrEqual(new Date());
     }
 
-    console.log(5);
+    if (isOpen === undefined && startScheduleDate) {
+      return Between(
+        startOfDay(new Date(startScheduleDate)),
+        endOfDay(new Date(startScheduleDate))
+      );
+    }
+
     return undefined;
   }
 }

@@ -24,7 +24,7 @@ export class ScheduleService {
           sportType: query.sportType || undefined,
           sportModality: query.sportModality || undefined,
           startScheduleDate: this.repository.createStartScheduleDateFilter({
-            open: query.open,
+            isOpen: query.isOpen,
             startScheduleDate: query.startScheduleDate,
           }),
           period: query.period || undefined,
@@ -70,7 +70,7 @@ export class ScheduleService {
           sportType: query.sportType || undefined,
           sportModality: query.sportModality || undefined,
           startScheduleDate: this.repository.createStartScheduleDateFilter({
-            open: query.open,
+            isOpen: query.isOpen,
             startScheduleDate: query.startScheduleDate,
           }),
           period: query.period || undefined,
@@ -301,7 +301,7 @@ export class ScheduleService {
     scheduleToJoin.updatedAt = new Date();
 
     try {
-      await this.repository.save({ ...scheduleToJoin });
+      await this.repository.save(scheduleToJoin);
 
       return { result: "Você entrou no time com sucesso" };
     } catch (_) {
