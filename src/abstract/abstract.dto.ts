@@ -1,4 +1,4 @@
-import { IsDateString, IsNumber, IsOptional } from "class-validator";
+import { IsArray, IsDateString, IsNumber, IsOptional } from "class-validator";
 import { Transform } from "class-transformer";
 
 export abstract class AbstractDto {

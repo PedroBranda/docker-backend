@@ -9,13 +9,9 @@ import {
 } from "class-validator";
 import { Transform } from "class-transformer";
 import { DocumentTypes, UserGenders } from "../user.entity";
+import { AbstractDto } from "../../abstract/abstract.dto";
 
-export class GetUserDto {
-  @IsNumber({}, { message: "O campo: 'id' deve ser um número" })
-  @IsOptional()
-  @Transform(({ value }) => +value)
-  readonly id?: number;
-
+export class GetUserDto extends AbstractDto {
   @IsString({ message: "O campo: 'document' deve ser uma string" })
   @IsOptional()
   readonly document?: string;
@@ -58,40 +54,4 @@ export class GetUserDto {
   @IsEmail({}, { message: "E-mail inválido" })
   @IsOptional()
   readonly email?: string;
-
-  @IsDateString(
-    {},
-    { message: "O campo: 'createdAt' deve ser uma ISO 8601 string" }
-  )
-  @IsOptional()
-  readonly createdAt?: string;
-
-  @IsDateString(
-    {},
-    { message: "O campo: 'updatedAt' deve ser uma ISO 8601 string" }
-  )
-  @IsOptional()
-  readonly updatedAt?: string;
-
-  @IsDateString(
-    {},
-    { message: "O campo: 'deletedAt' deve ser uma ISO 8601 string" }
-  )
-  @IsOptional()
-  readonly deletedAt?: string;
-
-  @IsNumber({}, { message: "O campo: 'createdBy' deve ser um número" })
-  @IsOptional()
-  @Transform(({ value }) => +value)
-  readonly createdBy?: number;
-
-  @IsNumber({}, { message: "O campo: 'updatedBy' deve ser um número" })
-  @IsOptional()
-  @Transform(({ value }) => +value)
-  readonly updatedBy?: number;
-
-  @IsNumber({}, { message: "O campo: 'deletedBy' deve ser um número" })
-  @IsOptional()
-  @Transform(({ value }) => +value)
-  readonly deletedBy?: number;
 }

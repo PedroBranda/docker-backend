@@ -8,7 +8,7 @@ import { GetUserDto } from "./dto/getUser.dto";
 import { ScheduleRepository } from "../schedule/schedule.repository";
 import { LocationRepository } from "../location/location.repository";
 import { TeamRepository } from "../team/team.repository";
-import { FindOptionsSelect } from "typeorm";
+import { FindOptionsSelect, In } from "typeorm";
 import { validateCPF } from "../utils/validators";
 import { CreateUserDto } from "./dto/createUser.dto";
 
@@ -24,6 +24,17 @@ export class UserService {
   async findAll(query: GetUserDto) {
     try {
       const [result, total] = await this.repository.findAndCount({
+        where: {
+          id: query.id || undefined,
+          document: query.document || undefined,
+          documentType: query.documentType || undefined,
+          gender: query.gender || undefined,
+          birthDate:
+            (query.birthDate && new Date(query.birthDate)) || undefined,
+          phone: query.phone || undefined,
+          firstName: query.firstName || undefined,
+          lastName: query.lastName || undefined,
+        },
         select: {
           firstName: true,
           lastName: true,
@@ -33,6 +44,7 @@ export class UserService {
 
       return { result, total };
     } catch (_) {
+      console.log(_);
       throw new BadRequestException({
         message: "Não foi possível listar os usuários",
       });

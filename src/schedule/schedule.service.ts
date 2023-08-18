@@ -1,28 +1,19 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { And, Between, In, LessThanOrEqual, MoreThan } from "typeorm";
+import { Between, In } from "typeorm";
 import { Schedules } from "./schedule.entity";
 import { type CreateScheduleDto } from "./dto/createSchedule.dto";
-import {
-  addHours,
-  addMinutes,
-  addSeconds,
-  endOfDay,
-  isBefore,
-  startOfDay,
-} from "date-fns";
+import { addHours, addMinutes, addSeconds, isAfter, isBefore } from "date-fns";
 import { LocationTypes } from "../location/location.entity";
 import { type Users } from "../user/user.entity";
 import { TeamRepository } from "../team/team.repository";
 import { ScheduleRepository } from "./schedule.repository";
-import { LocationRepository } from "../location/location.repository";
 import { GetScheduleDto } from "./dto/getSchedule.dto";
 
 @Injectable()
 export class ScheduleService {
   constructor(
     private readonly repository: ScheduleRepository,
-    private readonly teamRepository: TeamRepository,
-    private readonly locationRepository: LocationRepository
+    private readonly teamRepository: TeamRepository
   ) {}
 
   async findAll(query: GetScheduleDto) {
@@ -33,7 +24,7 @@ export class ScheduleService {
           sportType: query.sportType || undefined,
           sportModality: query.sportModality || undefined,
           startScheduleDate: this.repository.createStartScheduleDateFilter({
-            opened: query.opened,
+            open: query.open,
             startScheduleDate: query.startScheduleDate,
           }),
           period: query.period || undefined,
@@ -79,7 +70,7 @@ export class ScheduleService {
           sportType: query.sportType || undefined,
           sportModality: query.sportModality || undefined,
           startScheduleDate: this.repository.createStartScheduleDateFilter({
-            opened: query.opened,
+            open: query.open,
             startScheduleDate: query.startScheduleDate,
           }),
           period: query.period || undefined,
@@ -222,9 +213,9 @@ export class ScheduleService {
       });
     }
 
-    if (scheduleToJoin.endScheduleDate < new Date()) {
+    if (isAfter(new Date(), new Date(scheduleToJoin.startScheduleDate))) {
       throw new BadRequestException({
-        message: `Agendamento do time: ${scheduleId} está fechado`,
+        message: `O agendamento do time: ${scheduleId} está fechado, infelizmente você não pode mais entrar`,
       });
     }
 
@@ -306,13 +297,11 @@ export class ScheduleService {
     }
 
     scheduleToJoin.team.users.push(user);
+    scheduleToJoin.updatedBy = user.id;
+    scheduleToJoin.updatedAt = new Date();
 
     try {
-      await this.repository.save({
-        ...scheduleToJoin,
-        updatedBy: user.id,
-        updatedAt: new Date(),
-      });
+      await this.repository.save({ ...scheduleToJoin });
 
       return { result: "Você entrou no time com sucesso" };
     } catch (_) {
@@ -328,7 +317,7 @@ export class ScheduleService {
     try {
       scheduleToLeave = await this.repository.findOneOrFail({
         where: { id: scheduleId, team: { users: { id: user.id } } },
-        select: { id: true, endScheduleDate: true, createdBy: true },
+        select: { id: true, startScheduleDate: true, createdBy: true },
       });
     } catch (e) {
       throw new BadRequestException({
@@ -336,9 +325,9 @@ export class ScheduleService {
       });
     }
 
-    if (scheduleToLeave.endScheduleDate < new Date()) {
+    if (isAfter(new Date(), new Date(scheduleToLeave.startScheduleDate))) {
       throw new BadRequestException({
-        message: `Agendamento do time: ${scheduleId} está fechado`,
+        message: `O agendamento do time: ${scheduleId} está fechado, infelizmente você não pode mais entrar`,
       });
     }
 

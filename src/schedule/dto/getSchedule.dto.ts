@@ -71,5 +71,5 @@ export class GetScheduleDto extends AbstractDto {
   @Transform(({ value }) =>
     value === "true" ? true : value === "false" ? false : ""
   )
-  readonly opened: boolean;
+  readonly open: boolean;
 }
