@@ -1,9 +1,9 @@
 import {
   IsDateString,
   IsEnum,
+  IsInt,
   IsLatitude,
   IsLongitude,
-  IsNumber,
 } from "class-validator";
 import {
   SchedulePeriods,
@@ -42,7 +42,7 @@ export class CreateScheduleDto {
   })
   readonly period: SchedulePeriods;
 
-  @IsNumber({}, { message: "O campo: 'teamLimitSize' deve ser um número" })
+  @IsInt({ message: "O campo: 'teamLimitSize' deve ser um número" })
   readonly teamLimitSize: number;
 
   @IsDateString(

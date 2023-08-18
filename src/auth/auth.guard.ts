@@ -22,6 +22,12 @@ export class AuthGuard implements CanActivate {
     private readonly userService: UserService
   ) {}
 
+  verifyId(id: number) {
+    if (!id) {
+      throw Error();
+    }
+  }
+
   async canActivate(context: ExecutionContext) {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
@@ -42,11 +48,13 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const { id }: AuthUserPayload = await this.jwtService.verify(token, {
+      let { id }: AuthUserPayload = await this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
       });
 
-      const user = await this.userService.findOne(id);
+      this.verifyId(id);
+
+      const user = await this.userService.findForAuthentication(id);
 
       request.user = user.result;
     } catch (_) {

@@ -16,8 +16,10 @@ export class ScheduleService {
     private readonly teamRepository: TeamRepository
   ) {}
 
-  async findAll(query: GetScheduleDto) {
+  async find(query: GetScheduleDto) {
     try {
+      const take = query.perPage;
+      const skip = take * (query.page - 1);
       const [result, total] = await this.repository.findAndCount({
         where: {
           id: query.id || undefined,
@@ -47,6 +49,8 @@ export class ScheduleService {
           creator: { firstName: true, lastName: true },
         },
         order: { startScheduleDate: "DESC" },
+        skip: skip || undefined,
+        take: take || undefined,
       });
       return { result, total };
     } catch (_) {
@@ -58,11 +62,12 @@ export class ScheduleService {
 
   async findMine(id: number, query: GetScheduleDto) {
     try {
+      const take = query.perPage;
+      const skip = take * (query.page - 1);
       const teams = await this.teamRepository.find({
         where: { users: { id } },
         select: { id: true },
       });
-
       const [result, total] = await this.repository.findAndCount({
         where: {
           team: { id: In(teams.map((team) => team.id)) },
@@ -93,6 +98,8 @@ export class ScheduleService {
           creator: { firstName: true, lastName: true },
         },
         order: { startScheduleDate: "DESC" },
+        take: take || undefined,
+        skip: skip || undefined,
       });
 
       return { result, total };

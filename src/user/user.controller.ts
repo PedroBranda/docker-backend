@@ -21,28 +21,12 @@ export class UserController {
 
   @Get()
   async get(@Query() query: GetUserDto) {
-    return await this.usersService.findAll(query);
+    return await this.usersService.find(query);
   }
 
   @Get("me")
   async getMe(@AuthUser("id") userId: number) {
-    return await this.usersService.findOne(userId, {
-      firstName: true,
-      lastName: true,
-      birthDate: true,
-      document: true,
-      gender: true,
-      phone: true,
-      email: true,
-    });
-  }
-
-  @Get(":id")
-  async getOne(@Param("id") userId: number) {
-    return await this.usersService.findOne(userId, {
-      firstName: true,
-      lastName: true,
-    });
+    return await this.usersService.findMe(userId);
   }
 
   @Public()

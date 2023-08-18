@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Users } from "../user/user.entity";
+import { Users } from "../../user/user.entity";
 
 export abstract class AbstractEntity {
   @PrimaryGeneratedColumn()

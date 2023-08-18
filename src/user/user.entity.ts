@@ -1,13 +1,6 @@
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from "typeorm";
+import { Column, Entity } from "typeorm";
 import { IsOptional } from "class-validator";
-import { AbstractEntity } from "../abstract/abstract.entity";
+import { AbstractEntity } from "../common/abstract/abstract.entity";
 
 export enum UserPermissions {
   admin,

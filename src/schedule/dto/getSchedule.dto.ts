@@ -5,9 +5,9 @@ import {
   SportTypes,
 } from "../schedule.entity";
 import { Transform } from "class-transformer";
-import { AbstractDto } from "../../abstract/abstract.dto";
+import { AbstractWithPaginationDto } from "../../common/abstract/abstractWithPagination.dto";
 
-export class GetScheduleDto extends AbstractDto {
+export class GetScheduleDto extends AbstractWithPaginationDto {
   @IsEnum(SportTypes, {
     message: `O campo: 'sportType' deve ser um item do enum SportTypes:${Object.values(
       SportTypes

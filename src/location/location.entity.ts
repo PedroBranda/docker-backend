@@ -1,6 +1,6 @@
 import { Column, Entity, Index, OneToOne } from "typeorm";
 import { Point } from "geojson";
-import { AbstractEntity } from "../abstract/abstract.entity";
+import { AbstractEntity } from "../common/abstract/abstract.entity";
 import { Schedules } from "../schedule/schedule.entity";
 
 export enum LocationTypes {

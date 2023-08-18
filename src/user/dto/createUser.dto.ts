@@ -2,6 +2,7 @@ import {
   IsDateString,
   IsEmail,
   IsEnum,
+  IsNotEmpty,
   IsPhoneNumber,
   IsString,
   IsStrongPassword,
@@ -10,12 +11,15 @@ import { DocumentTypes, UserGenders } from "../user.entity";
 
 export class CreateUserDto {
   @IsString({ message: "O campo: 'firstName' deve ser uma string" })
+  @IsNotEmpty({ message: "O campo: 'firstName' não pode ser vazio" })
   readonly firstName: string;
 
   @IsString({ message: "O campo: 'lastName' deve ser uma string" })
+  @IsNotEmpty({ message: "O campo: 'lastName' não pode ser vazio" })
   readonly lastName: string;
 
   @IsString({ message: "O campo: 'document' deve ser uma string" })
+  @IsNotEmpty({ message: "O campo: 'document' não pode ser vazio" })
   readonly document: string;
 
   @IsEnum(DocumentTypes, {

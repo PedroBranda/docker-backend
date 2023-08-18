@@ -1,14 +1,10 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { Users } from "./user.entity";
 import { hash } from "bcrypt";
 import { type UpdateUserDto } from "./dto/updateUser.dto";
 import { UserRepository } from "./user.repository";
 import { isAfter, subYears } from "date-fns";
 import { GetUserDto } from "./dto/getUser.dto";
 import { ScheduleRepository } from "../schedule/schedule.repository";
-import { LocationRepository } from "../location/location.repository";
-import { TeamRepository } from "../team/team.repository";
-import { FindOptionsSelect, In } from "typeorm";
 import { validateCPF } from "../utils/validators";
 import { CreateUserDto } from "./dto/createUser.dto";
 
@@ -16,16 +12,15 @@ import { CreateUserDto } from "./dto/createUser.dto";
 export class UserService {
   constructor(
     private readonly repository: UserRepository,
-    private readonly scheduleRepository: ScheduleRepository,
-    private readonly teamRepository: TeamRepository,
-    private readonly locationRepository: LocationRepository
+    private readonly scheduleRepository: ScheduleRepository
   ) {}
 
-  async findAll(query: GetUserDto) {
+  async find(query: GetUserDto) {
     try {
+      const take = query.perPage;
+      const skip = take * (query.page - 1);
       const [result, total] = await this.repository.findAndCount({
         where: {
-          id: query.id || undefined,
           document: query.document || undefined,
           documentType: query.documentType || undefined,
           gender: query.gender || undefined,
@@ -38,8 +33,12 @@ export class UserService {
         select: {
           firstName: true,
           lastName: true,
+          phone: true,
+          email: true,
         },
         order: { id: "ASC" },
+        take: take || undefined,
+        skip: skip || undefined,
       });
 
       return { result, total };
@@ -51,14 +50,33 @@ export class UserService {
     }
   }
 
-  async findOne(id: number, select?: FindOptionsSelect<Users>) {
+  async findMe(id: number) {
     try {
       return {
         result: await this.repository.findOneOrFail({
-          withDeleted: false,
           where: { id },
-          select: { ...select },
+          select: {
+            firstName: true,
+            lastName: true,
+            birthDate: true,
+            document: true,
+            gender: true,
+            phone: true,
+            email: true,
+          },
         }),
+      };
+    } catch (_) {
+      throw new BadRequestException({
+        message: `Não foi possível listar o usuário: ${id}`,
+      });
+    }
+  }
+
+  async findForAuthentication(id: number) {
+    try {
+      return {
+        result: await this.repository.findOneOrFail({ where: { id } }),
       };
     } catch (_) {
       throw new BadRequestException({

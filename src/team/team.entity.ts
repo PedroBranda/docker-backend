@@ -1,6 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToOne } from "typeorm";
 import { Users } from "../user/user.entity";
-import { AbstractEntity } from "../abstract/abstract.entity";
+import { AbstractEntity } from "../common/abstract/abstract.entity";
 import { Schedules } from "../schedule/schedule.entity";
 
 @Entity()
