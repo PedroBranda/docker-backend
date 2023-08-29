@@ -3,19 +3,19 @@ import { IsOptional } from "class-validator";
 import { AbstractEntity } from "../common/abstract/abstract.entity";
 
 export enum UserPermissions {
-  admin,
-  player,
+  admin = 1,
+  player = 2,
 }
 
 export enum DocumentTypes {
-  rg,
-  cpf,
+  rg = 1,
+  cpf = 2,
 }
 
 export enum UserGenders {
-  male,
-  female,
-  other,
+  male = 1,
+  female = 2,
+  other = 3,
 }
 
 @Entity()

@@ -1,4 +1,10 @@
-import { IsBoolean, IsDateString, IsEnum, IsOptional } from "class-validator";
+import {
+  IsBoolean,
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+} from "class-validator";
 import {
   SchedulePeriods,
   SportModalities,

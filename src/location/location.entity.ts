@@ -4,8 +4,8 @@ import { AbstractEntity } from "../common/abstract/abstract.entity";
 import { Schedules } from "../schedule/schedule.entity";
 
 export enum LocationTypes {
-  user,
-  schedule,
+  user = 1,
+  schedule = 2,
 }
 
 @Entity()

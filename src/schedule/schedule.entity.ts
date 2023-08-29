@@ -4,13 +4,13 @@ import { Teams } from "../team/team.entity";
 import { AbstractEntity } from "../common/abstract/abstract.entity";
 
 export enum SportTypes {
-  soccer,
+  soccer = 1,
 }
 
 export enum SportModalities {
-  fieldSoccer,
-  swissSoccer,
-  indoorSoccer,
+  fieldSoccer = 1,
+  swissSoccer = 2,
+  indoorSoccer = 3,
 }
 
 export enum SchedulePeriods {

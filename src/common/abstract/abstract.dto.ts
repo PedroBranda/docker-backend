@@ -2,12 +2,6 @@ import { IsDateString, IsInt, IsOptional, IsPositive } from "class-validator";
 import { Transform } from "class-transformer";
 
 export abstract class AbstractDto {
-  @IsInt({ message: "O campo: 'id' deve ser um número" })
-  @IsPositive({ message: "O campo: 'id' deve ser positivo" })
-  @IsOptional()
-  @Transform(({ value }) => +value)
-  readonly id?: number;
-
   @IsDateString(
     {},
     { message: "O campo: 'createdAt' deve ser uma ISO 8601 string" }

@@ -18,12 +18,17 @@ import { GetScheduleDto } from "./dto/getSchedule.dto";
 export class ScheduleController {
   constructor(private readonly service: ScheduleService) {}
 
+  @Get(":scheduleId")
+  async getOne(@Param("scheduleId") scheduleId: number) {
+    return await this.service.findOne(scheduleId);
+  }
+
   @Get()
   async get(@Query() query: GetScheduleDto) {
     return await this.service.find(query);
   }
 
-  @Get("me")
+  @Get("mine")
   async getMineSchedule(
     @Query() query: GetScheduleDto,
     @AuthUser("id") userId: number
@@ -39,7 +44,7 @@ export class ScheduleController {
     return await this.service.create(createUserDto, user);
   }
 
-  @Post(":scheduleId")
+  @Post("join/:scheduleId")
   async joinSchedule(
     @AuthUser() user: Users,
     @Param("scheduleId") scheduleId: number
@@ -47,7 +52,7 @@ export class ScheduleController {
     return await this.service.joinSchedule(user, scheduleId);
   }
 
-  @Patch(":scheduleId")
+  @Post("leave/:scheduleId")
   async leaveSchedule(
     @AuthUser() user: Users,
     @Param("scheduleId") scheduleId: number

@@ -56,6 +56,7 @@ export class UserService {
         result: await this.repository.findOneOrFail({
           where: { id },
           select: {
+            id: true,
             firstName: true,
             lastName: true,
             birthDate: true,
@@ -187,10 +188,10 @@ export class UserService {
 
       await this.scheduleRepository.softRemove(selfOpenedSchedules);
 
-      return { result: "Usuário deletado com sucesso" };
+      return { result: "Usuário excluído com sucesso" };
     } catch (_) {
       throw new BadRequestException({
-        message: `Não foi possível deletar o usuário: ${id}`,
+        message: `Não foi possível excluir o usuário: ${id}`,
       });
     }
   }

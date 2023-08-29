@@ -16,13 +16,41 @@ export class ScheduleService {
     private readonly teamRepository: TeamRepository
   ) {}
 
+  async findOne(id: number) {
+    try {
+      return {
+        result: await this.repository.findOneOrFail({
+          where: { id },
+          relations: { location: true, team: { users: true }, creator: true },
+          select: {
+            id: true,
+            sportType: true,
+            sportModality: true,
+            startScheduleDate: true,
+            endScheduleDate: true,
+            team: {
+              teamSizeLimit: true,
+              users: { id: true, firstName: true, lastName: true },
+            },
+            location: { point: { coordinates: true } },
+            creator: { id: true, firstName: true, lastName: true },
+          },
+          order: { startScheduleDate: "DESC" },
+        }),
+      };
+    } catch (_) {
+      throw new BadRequestException({
+        message: `Não foi possível listar o time: ${id}`,
+      });
+    }
+  }
+
   async find(query: GetScheduleDto) {
     try {
       const take = query.perPage;
       const skip = take * (query.page - 1);
       const [result, total] = await this.repository.findAndCount({
         where: {
-          id: query.id || undefined,
           sportType: query.sportType || undefined,
           sportModality: query.sportModality || undefined,
           startScheduleDate: this.repository.createStartScheduleDateFilter({
@@ -43,10 +71,10 @@ export class ScheduleService {
           endScheduleDate: true,
           team: {
             teamSizeLimit: true,
-            users: { firstName: true, lastName: true },
+            users: { id: true, firstName: true, lastName: true },
           },
           location: { point: { coordinates: true } },
-          creator: { firstName: true, lastName: true },
+          creator: { id: true, firstName: true, lastName: true },
         },
         order: { startScheduleDate: "DESC" },
         skip: skip || undefined,
@@ -71,7 +99,6 @@ export class ScheduleService {
       const [result, total] = await this.repository.findAndCount({
         where: {
           team: { id: In(teams.map((team) => team.id)) },
-          id: query.id || undefined,
           sportType: query.sportType || undefined,
           sportModality: query.sportModality || undefined,
           startScheduleDate: this.repository.createStartScheduleDateFilter({
@@ -92,10 +119,10 @@ export class ScheduleService {
           endScheduleDate: true,
           team: {
             teamSizeLimit: true,
-            users: { firstName: true, lastName: true },
+            users: { id: true, firstName: true, lastName: true },
           },
           location: { point: { coordinates: true } },
-          creator: { firstName: true, lastName: true },
+          creator: { id: true, firstName: true, lastName: true },
         },
         order: { startScheduleDate: "DESC" },
         take: take || undefined,
@@ -122,13 +149,13 @@ export class ScheduleService {
 
     const openedSchedule = await this.repository.findOne({
       where: [
-        {
-          createdBy: user.id,
-          startScheduleDate: Between(
-            new Date(params.startScheduleDate),
-            addHours(new Date(params.startScheduleDate), params.period)
-          ),
-        },
+        // {
+        //   createdBy: user.id,
+        //   startScheduleDate: Between(
+        //     new Date(params.startScheduleDate),
+        //     addHours(new Date(params.startScheduleDate), params.period)
+        //   ),
+        // },
         {
           createdBy: user.id,
           endScheduleDate: Between(
@@ -136,15 +163,15 @@ export class ScheduleService {
             addHours(new Date(params.startScheduleDate), params.period)
           ),
         },
-        {
-          team: {
-            users: { id: user.id },
-          },
-          startScheduleDate: Between(
-            new Date(params.startScheduleDate),
-            addHours(new Date(params.startScheduleDate), params.period)
-          ),
-        },
+        // {
+        //   team: {
+        //     users: { id: user.id },
+        //   },
+        //   startScheduleDate: Between(
+        //     new Date(params.startScheduleDate),
+        //     addHours(new Date(params.startScheduleDate), params.period)
+        //   ),
+        // },
         {
           team: {
             users: { id: user.id },
@@ -248,16 +275,16 @@ export class ScheduleService {
 
     const openedSchedule = await this.repository.findOne({
       where: [
-        {
-          createdBy: user.id,
-          startScheduleDate: Between(
-            new Date(scheduleToJoin.startScheduleDate),
-            addHours(
-              new Date(scheduleToJoin.startScheduleDate),
-              scheduleToJoin.period
-            )
-          ),
-        },
+        // {
+        //   createdBy: user.id,
+        //   startScheduleDate: Between(
+        //     new Date(scheduleToJoin.startScheduleDate),
+        //     addHours(
+        //       new Date(scheduleToJoin.startScheduleDate),
+        //       scheduleToJoin.period
+        //     )
+        //   ),
+        // },
         {
           createdBy: user.id,
           endScheduleDate: Between(
@@ -268,18 +295,18 @@ export class ScheduleService {
             )
           ),
         },
-        {
-          team: {
-            users: { id: user.id },
-          },
-          startScheduleDate: Between(
-            new Date(scheduleToJoin.startScheduleDate),
-            addHours(
-              new Date(scheduleToJoin.startScheduleDate),
-              scheduleToJoin.period
-            )
-          ),
-        },
+        // {
+        //   team: {
+        //     users: { id: user.id },
+        //   },
+        //   startScheduleDate: Between(
+        //     new Date(scheduleToJoin.startScheduleDate),
+        //     addHours(
+        //       new Date(scheduleToJoin.startScheduleDate),
+        //       scheduleToJoin.period
+        //     )
+        //   ),
+        // },
         {
           team: {
             users: { id: user.id },
@@ -328,7 +355,7 @@ export class ScheduleService {
       });
     } catch (e) {
       throw new BadRequestException({
-        message: `Você não participa do time: ${scheduleId}`,
+        message: `Você não participa deste time`,
       });
     }
 
@@ -381,10 +408,10 @@ export class ScheduleService {
 
       await this.repository.softRemove(schedule);
 
-      return { result: "Time deletado com sucesso" };
+      return { result: "Time excluído com sucesso" };
     } catch (_) {
       throw new BadRequestException({
-        message: `Não foi possível deletar o time: ${scheduleId}`,
+        message: `Não foi possível excluir o time: ${scheduleId}`,
       });
     }
   }
