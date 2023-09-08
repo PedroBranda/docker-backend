@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { Between, In } from "typeorm";
+import { Between, In, Not } from "typeorm";
 import { Schedules } from "./schedule.entity";
 import { type CreateScheduleDto } from "./dto/createSchedule.dto";
 import { addHours, addMinutes, addSeconds, isAfter, isBefore } from "date-fns";
@@ -28,6 +28,7 @@ export class ScheduleService {
             sportModality: true,
             startScheduleDate: true,
             endScheduleDate: true,
+            period: true,
             team: {
               teamSizeLimit: true,
               users: { id: true, firstName: true, lastName: true },
@@ -45,12 +46,17 @@ export class ScheduleService {
     }
   }
 
-  async find(query: GetScheduleDto) {
+  async find(id: number, query: GetScheduleDto) {
     try {
       const take = query.perPage;
       const skip = take * (query.page - 1);
+      const teams = await this.teamRepository.find({
+        where: { users: { id } },
+        select: { id: true },
+      });
       const [result, total] = await this.repository.findAndCount({
         where: {
+          team: { id: Not(In(teams.map((team) => team.id))) },
           sportType: query.sportType || undefined,
           sportModality: query.sportModality || undefined,
           startScheduleDate: this.repository.createStartScheduleDateFilter({
@@ -69,6 +75,7 @@ export class ScheduleService {
           sportModality: true,
           startScheduleDate: true,
           endScheduleDate: true,
+          period: true,
           team: {
             teamSizeLimit: true,
             users: { id: true, firstName: true, lastName: true },
@@ -76,7 +83,7 @@ export class ScheduleService {
           location: { point: { coordinates: true } },
           creator: { id: true, firstName: true, lastName: true },
         },
-        order: { startScheduleDate: "DESC" },
+        order: { startScheduleDate: "ASC" },
         skip: skip || undefined,
         take: take || undefined,
       });
@@ -117,6 +124,7 @@ export class ScheduleService {
           sportModality: true,
           startScheduleDate: true,
           endScheduleDate: true,
+          period: true,
           team: {
             teamSizeLimit: true,
             users: { id: true, firstName: true, lastName: true },
@@ -124,7 +132,7 @@ export class ScheduleService {
           location: { point: { coordinates: true } },
           creator: { id: true, firstName: true, lastName: true },
         },
-        order: { startScheduleDate: "DESC" },
+        order: { startScheduleDate: "ASC" },
         take: take || undefined,
         skip: skip || undefined,
       });
@@ -147,15 +155,21 @@ export class ScheduleService {
       });
     }
 
+    if (params.teamLimitSize <= 1) {
+      throw new BadRequestException({
+        message: "O tamanho do time deve ser maior que 1",
+      });
+    }
+
     const openedSchedule = await this.repository.findOne({
       where: [
-        // {
-        //   createdBy: user.id,
-        //   startScheduleDate: Between(
-        //     new Date(params.startScheduleDate),
-        //     addHours(new Date(params.startScheduleDate), params.period)
-        //   ),
-        // },
+        {
+          createdBy: user.id,
+          startScheduleDate: Between(
+            new Date(params.startScheduleDate),
+            addHours(new Date(params.startScheduleDate), params.period)
+          ),
+        },
         {
           createdBy: user.id,
           endScheduleDate: Between(
@@ -163,15 +177,15 @@ export class ScheduleService {
             addHours(new Date(params.startScheduleDate), params.period)
           ),
         },
-        // {
-        //   team: {
-        //     users: { id: user.id },
-        //   },
-        //   startScheduleDate: Between(
-        //     new Date(params.startScheduleDate),
-        //     addHours(new Date(params.startScheduleDate), params.period)
-        //   ),
-        // },
+        {
+          team: {
+            users: { id: user.id },
+          },
+          startScheduleDate: Between(
+            new Date(params.startScheduleDate),
+            addHours(new Date(params.startScheduleDate), params.period)
+          ),
+        },
         {
           team: {
             users: { id: user.id },
@@ -218,10 +232,13 @@ export class ScheduleService {
         },
       });
 
-      await this.repository.save(scheduleToSave);
+      const { id } = await this.repository.save(scheduleToSave);
 
       return {
-        result: "Time criado com sucesso",
+        result: {
+          message: "Time criado com sucesso",
+          id,
+        },
       };
     } catch (_) {
       throw new BadRequestException({

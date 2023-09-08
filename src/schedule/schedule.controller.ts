@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
   Query,
 } from "@nestjs/common";
@@ -18,14 +17,9 @@ import { GetScheduleDto } from "./dto/getSchedule.dto";
 export class ScheduleController {
   constructor(private readonly service: ScheduleService) {}
 
-  @Get(":scheduleId")
-  async getOne(@Param("scheduleId") scheduleId: number) {
-    return await this.service.findOne(scheduleId);
-  }
-
   @Get()
-  async get(@Query() query: GetScheduleDto) {
-    return await this.service.find(query);
+  async get(@Query() query: GetScheduleDto, @AuthUser("id") userId: number) {
+    return await this.service.find(userId, query);
   }
 
   @Get("mine")
@@ -34,6 +28,11 @@ export class ScheduleController {
     @AuthUser("id") userId: number
   ) {
     return await this.service.findMine(userId, query);
+  }
+
+  @Get(":scheduleId")
+  async getOne(@Param("scheduleId") scheduleId: number) {
+    return await this.service.findOne(scheduleId);
   }
 
   @Post()

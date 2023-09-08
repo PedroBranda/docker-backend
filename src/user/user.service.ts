@@ -43,7 +43,6 @@ export class UserService {
 
       return { result, total };
     } catch (_) {
-      console.log(_);
       throw new BadRequestException({
         message: "Não foi possível listar os usuários",
       });
