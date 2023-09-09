@@ -37,3 +37,4 @@ lerna-debug.log*
 # Enviroments
 .env
 /yarn.lock
+/ngrok.yml
