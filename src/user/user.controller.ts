@@ -14,6 +14,7 @@ import { UserService } from "./user.service";
 import { Public } from "src/decorators/public.decorator";
 import { AuthUser } from "../decorators/authUser.decorator";
 import { GetUserDto } from "./dto/getUser.dto";
+import { ChangePasswordDto } from "./dto/changePassword.dto";
 
 @Controller("user")
 export class UserController {
@@ -33,6 +34,14 @@ export class UserController {
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     return await this.usersService.create(createUserDto);
+  }
+
+  @Patch("password")
+  async updatePassword(
+    @Body() changePasswordDto: ChangePasswordDto,
+    @AuthUser("id") userId: number
+  ) {
+    return await this.usersService.updatePassword(userId, changePasswordDto);
   }
 
   @Patch()

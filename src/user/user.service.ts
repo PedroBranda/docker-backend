@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { hash } from "bcrypt";
+import { compareSync, hash } from "bcrypt";
 import { type UpdateUserDto } from "./dto/updateUser.dto";
 import { UserRepository } from "./user.repository";
 import { isAfter, subYears } from "date-fns";
@@ -7,6 +7,8 @@ import { GetUserDto } from "./dto/getUser.dto";
 import { ScheduleRepository } from "../schedule/schedule.repository";
 import { validateCPF } from "../utils/validators";
 import { CreateUserDto } from "./dto/createUser.dto";
+import { ChangePasswordDto } from "./dto/changePassword.dto";
+import { Users } from "./user.entity";
 
 @Injectable()
 export class UserService {
@@ -171,6 +173,55 @@ export class UserService {
     } catch (_) {
       throw new BadRequestException({
         message: `Não foi possível editar o usuário: ${id}`,
+      });
+    }
+  }
+
+  async updatePassword(
+    id: number,
+    { oldPassword, newPassword }: ChangePasswordDto
+  ) {
+    let user: Users;
+
+    try {
+      user = await this.repository.findOneOrFail({
+        where: { id },
+        select: { password: true },
+      });
+    } catch (_) {
+      throw new BadRequestException({
+        message: "E-mail ou senha informados podem estar errados",
+      });
+    }
+
+    const passwordMatch = compareSync(oldPassword, user.password);
+
+    if (!passwordMatch) {
+      throw new BadRequestException({
+        message: "Senha atual informada não corresponde a sua senha atual",
+      });
+    }
+
+    if (oldPassword === newPassword) {
+      throw new BadRequestException({
+        message: "Senha atual e nova senha não podem ser iguais",
+      });
+    }
+
+    try {
+      const hashedPassword = await this.hashPassword(newPassword);
+
+      await this.repository.update(id, {
+        password: hashedPassword,
+        updatedBy: id,
+      });
+
+      return {
+        result: "Senha atualizada com sucesso",
+      };
+    } catch (_) {
+      throw new BadRequestException({
+        message: `Não foi possível trocar sua senha`,
       });
     }
   }

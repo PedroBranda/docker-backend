@@ -24,13 +24,13 @@ services:
       - postgres
     networks:
       - default
-#  nestjs:
-#    build: .
-#    restart: unless-stopped
-#    ports:
-#      - '3000:3000'
-#    depends_on:
-#      - postgres
+  nestjs:
+    build: .
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    depends_on:
+      - postgres
   ngrok:
     image: wernight/ngrok
     restart: unless-stopped
