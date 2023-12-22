@@ -24,6 +24,7 @@ import { TeamRepository } from "./team/team.repository";
 import { ScheduleRepository } from "./schedule/schedule.repository";
 import { UserRepository } from "./user/user.repository";
 import { LocationRepository } from "./location/location.repository";
+import { HttpModule } from "@nestjs/axios";
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { LocationRepository } from "./location/location.repository";
     }),
     ScheduleModule.forRoot(),
     TypeOrmModule.forFeature([Users, Locations, Schedules, Teams]),
+    HttpModule,
   ],
   controllers: [
     AppController,

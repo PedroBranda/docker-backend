@@ -8,36 +8,45 @@ import { type Users } from "../user/user.entity";
 import { TeamRepository } from "../team/team.repository";
 import { ScheduleRepository } from "./schedule.repository";
 import { GetScheduleDto } from "./dto/getSchedule.dto";
+import { LocationService } from "../location/location.service";
 
 @Injectable()
 export class ScheduleService {
   constructor(
     private readonly repository: ScheduleRepository,
-    private readonly teamRepository: TeamRepository
+    private readonly teamRepository: TeamRepository,
+    private readonly locationService: LocationService
   ) {}
 
   async findOne(id: number) {
     try {
-      return {
-        result: await this.repository.findOneOrFail({
-          where: { id },
-          relations: { location: true, team: { users: true }, creator: true },
-          select: {
-            id: true,
-            sportType: true,
-            sportModality: true,
-            startScheduleDate: true,
-            endScheduleDate: true,
-            period: true,
-            team: {
-              teamSizeLimit: true,
-              users: { id: true, firstName: true, lastName: true },
-            },
-            location: { point: { coordinates: true } },
-            creator: { id: true, firstName: true, lastName: true },
+      const schedule = await this.repository.findOneOrFail({
+        where: { id },
+        relations: { location: true, team: { users: true }, creator: true },
+        select: {
+          id: true,
+          sportType: true,
+          sportModality: true,
+          startScheduleDate: true,
+          endScheduleDate: true,
+          period: true,
+          team: {
+            teamSizeLimit: true,
+            users: { id: true, firstName: true, lastName: true },
           },
-          order: { startScheduleDate: "DESC" },
-        }),
+          location: { point: { coordinates: true } },
+          creator: { id: true, firstName: true, lastName: true },
+        },
+        order: { startScheduleDate: "DESC" },
+      });
+
+      const reverse = await this.locationService.getReverseGeocoding(
+        schedule.location.point.coordinates[0],
+        schedule.location.point.coordinates[1]
+      );
+
+      return {
+        result: { ...schedule, reverse },
       };
     } catch (_) {
       throw new BadRequestException({
@@ -54,7 +63,7 @@ export class ScheduleService {
         where: { users: { id } },
         select: { id: true },
       });
-      const [result, total] = await this.repository.findAndCount({
+      const [schedules, total] = await this.repository.findAndCount({
         where: {
           team: { id: Not(In(teams.map((team) => team.id))) },
           sportType: query.sportType || undefined,
@@ -87,6 +96,18 @@ export class ScheduleService {
         skip: skip || undefined,
         take: take || undefined,
       });
+
+      const result = await Promise.all(
+        schedules.map(async (schedule) => {
+          const reverse = await this.locationService.getReverseGeocoding(
+            schedule.location.point.coordinates[0],
+            schedule.location.point.coordinates[1]
+          );
+
+          return { ...schedule, reverse };
+        })
+      );
+
       return { result, total };
     } catch (_) {
       throw new BadRequestException({
@@ -103,7 +124,7 @@ export class ScheduleService {
         where: { users: { id } },
         select: { id: true },
       });
-      const [result, total] = await this.repository.findAndCount({
+      const [schedules, total] = await this.repository.findAndCount({
         where: {
           team: { id: In(teams.map((team) => team.id)) },
           sportType: query.sportType || undefined,
@@ -136,6 +157,17 @@ export class ScheduleService {
         take: take || undefined,
         skip: skip || undefined,
       });
+
+      const result = await Promise.all(
+        schedules.map(async (schedule) => {
+          const reverse = await this.locationService.getReverseGeocoding(
+            schedule.location.point.coordinates[0],
+            schedule.location.point.coordinates[1]
+          );
+
+          return { ...schedule, reverse };
+        })
+      );
 
       return { result, total };
     } catch (_) {

@@ -18,22 +18,22 @@ import { ChangePasswordDto } from "./dto/changePassword.dto";
 
 @Controller("user")
 export class UserController {
-  constructor(private readonly usersService: UserService) {}
+  constructor(private readonly service: UserService) {}
 
   @Get()
   async get(@Query() query: GetUserDto) {
-    return await this.usersService.find(query);
+    return await this.service.find(query);
   }
 
   @Get("me")
   async getMe(@AuthUser("id") userId: number) {
-    return await this.usersService.findMe(userId);
+    return await this.service.findMe(userId);
   }
 
   @Public()
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    return await this.usersService.create(createUserDto);
+    return await this.service.create(createUserDto);
   }
 
   @Patch("password")
@@ -41,7 +41,7 @@ export class UserController {
     @Body() changePasswordDto: ChangePasswordDto,
     @AuthUser("id") userId: number
   ) {
-    return await this.usersService.updatePassword(userId, changePasswordDto);
+    return await this.service.updatePassword(userId, changePasswordDto);
   }
 
   @Patch()
@@ -49,11 +49,11 @@ export class UserController {
     @AuthUser("id") userId: number,
     @Body() updateUserDto: UpdateUserDto
   ) {
-    return await this.usersService.update(userId, updateUserDto);
+    return await this.service.update(userId, updateUserDto);
   }
 
   @Delete()
   async delete(@AuthUser("id") userId: number) {
-    return await this.usersService.delete(userId);
+    return await this.service.delete(userId);
   }
 }
