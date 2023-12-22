@@ -19,7 +19,7 @@ export class LocationService {
   async getReverseGeocoding(lat: number, lon: number) {
     try {
       const { data } = await lastValueFrom<AxiosResponse<Nominatim>>(
-        this.httpService.get(process.env.GEOCODING_API_URL, {
+        this.httpService.get(process.env.REVERSE_GEOCODING_API_URL, {
           params: {
             format: "json",
             lat,
