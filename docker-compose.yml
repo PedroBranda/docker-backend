@@ -84,11 +84,13 @@ services:
     command: [ "ngrok", "start", "--config", "/home/ngrok/.ngrok2/ngrok.yml", "http1", "http2" ]
     networks:
       - default
+
 volumes:
   postgis_data:
   pgadmin_data:
   node_modules:
   nominatim_data:
   nominatim_osm_data:
+
 networks:
   default:
