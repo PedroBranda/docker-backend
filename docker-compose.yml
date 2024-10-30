@@ -7,9 +7,10 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - data:/var/lib/postgresql/data
+      - postgis_data:/var/lib/postgresql/data
     networks:
       - default
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
@@ -19,11 +20,12 @@ services:
     ports:
       - '5050:80'
     volumes:
-      - data:/var/lib/pgadmin
+      - pgadmin_data:/var/lib/pgadmin
     depends_on:
       - postgres
     networks:
       - default
+
   app-production:
     container_name: nestjs-app-production
     restart: unless-stopped
@@ -36,6 +38,7 @@ services:
       - '3000:3000'
     depends_on:
       - postgres
+
   app-development:
     container_name: nestjs-app-development
     restart: unless-stopped
@@ -53,13 +56,21 @@ services:
       - "3000:3000"
     depends_on:
       - postgres
-  #  nominatim:
-  #    image: mediagis/nominatim
-  #    container_name: nominatim
-  #    env_file: .env
-  #    ports:
-  #      - '8080:8080'
-  #    command: sh /app/init.sh
+
+  nominatim:
+    image: mediagis/nominatim:4.4
+    container_name: nominatim
+    ports:
+      - "8000:8000"
+    env_file: .env
+    volumes:
+      - nominatim_data:/var/lib/postgresql/12/main
+      - nominatim_osm_data:/var/lib/nominatim
+    depends_on:
+      - postgres
+    networks:
+      - default
+
   ngrok:
     image: wernight/ngrok
     container_name: ngrok
@@ -70,11 +81,14 @@ services:
       - "4040:4040"
     depends_on:
       - postgres
-    command: [ "ngrok", "http", "host.docker.internal:3000" ]
+    command: [ "ngrok", "start", "--config", "/home/ngrok/.ngrok2/ngrok.yml", "http1", "http2" ]
     networks:
       - default
 volumes:
-  data:
+  postgis_data:
+  pgadmin_data:
   node_modules:
+  nominatim_data:
+  nominatim_osm_data:
 networks:
   default:

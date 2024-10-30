@@ -1,2 +1,10 @@
+version:
 authtoken:
 web_addr:
+tunnels:
+  http1:
+    addr:
+    proto:
+  http2:
+    addr:
+    proto:
