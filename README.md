@@ -10,7 +10,7 @@ Para rodar a aplicação siga os passos a seguir:
 ### Rodando projeto para desenvolvimento no PowerShell | CMD
     docker compose up --build -d; docker compose --profile development --build -d
 
-#### Rodando projeto para produção no PowerShell | CMD
+### Rodando projeto para produção no PowerShell | CMD
     docker compose up --build -d; docker compose --profile production --build -d
 
 ##### TODO:
