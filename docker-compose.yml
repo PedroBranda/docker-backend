@@ -24,14 +24,18 @@ services:
       - postgres
     networks:
       - default
-#  app:
-#    container_name: nestjs-app
-#    build: .
-#    restart: unless-stopped
-#    ports:
-#      - '3000:3000'
-#    depends_on:
-#      - postgres
+  app-production:
+    container_name: nestjs-app-production
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    profiles:
+      - production
+    ports:
+      - '3000:3000'
+    depends_on:
+      - postgres
   app-development:
     container_name: nestjs-app-development
     restart: unless-stopped
@@ -49,13 +53,13 @@ services:
       - "3000:3000"
     depends_on:
       - postgres
-#  nominatim:
-#    image: mediagis/nominatim
-#    container_name: nominatim_container
-#    env_file: .env
-#    ports:
-#      - '8080:8080'
-#    command: sh /app/init.sh
+  #  nominatim:
+  #    image: mediagis/nominatim
+  #    container_name: nominatim_container
+  #    env_file: .env
+  #    ports:
+  #      - '8080:8080'
+  #    command: sh /app/init.sh
   ngrok:
     image: wernight/ngrok
     restart: unless-stopped
