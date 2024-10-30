@@ -8,10 +8,10 @@
 Para rodar a aplicação siga os passos a seguir:
 
 ### Rodando projeto para desenvolvimento no PowerShell | CMD
-    docker compose up --build -d; docker compose --profile development --build -d
+    docker compose up --build -d; docker compose --profile development up --build -d
 
 ### Rodando projeto para produção no PowerShell | CMD
-    docker compose up --build -d; docker compose --profile production --build -d
+    docker compose up --build -d; docker compose --profile production up --build -d
 
 ##### TODO:
  - create JSDoc to all service functions and methods
