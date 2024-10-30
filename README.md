@@ -7,15 +7,11 @@
 
 Para rodar a aplicação siga os passos a seguir:
 
-### PowerShell | CMD
-    Para rodar os serviçoes genericos:
-    docker compose up --build -d
+### Rodando projeto para desenvolvimento no PowerShell | CMD
+    docker compose up --build -d; docker compose --profile development --build -d
 
-    Para rodar em produção:
-    docker compose --profile production --build -d
+#### Rodando projeto para produção no PowerShell | CMD
+    docker compose up --build -d; docker compose --profile production --build -d
 
-    Para rodar em desenvolvimento:
-    docker compose --profile development --build -d
-
-#### TODO:
+##### TODO:
  - create JSDoc to all service functions and methods
