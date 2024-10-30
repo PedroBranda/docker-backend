@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgis/postgis
-    container_name: postgis_container
+    container_name: postgis
     env_file: .env
     restart: unless-stopped
     ports:
@@ -12,7 +12,7 @@ services:
       - default
   pgadmin:
     image: dpage/pgadmin4
-    container_name: pgadmin_container
+    container_name: pgadmin
     env_file: .env
     restart: unless-stopped
     user: "${UID}:${GID}"
@@ -55,13 +55,14 @@ services:
       - postgres
   #  nominatim:
   #    image: mediagis/nominatim
-  #    container_name: nominatim_container
+  #    container_name: nominatim
   #    env_file: .env
   #    ports:
   #      - '8080:8080'
   #    command: sh /app/init.sh
   ngrok:
     image: wernight/ngrok
+    container_name: ngrok
     restart: unless-stopped
     volumes:
       - ./ngrok.yml:/home/ngrok/.ngrok2/ngrok.yml
