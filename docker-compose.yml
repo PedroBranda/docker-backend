@@ -38,6 +38,8 @@ services:
       - '3000:3000'
     depends_on:
       - postgres
+    networks:
+      - default
 
   app-development:
     container_name: nestjs-app-development
@@ -56,6 +58,8 @@ services:
       - "3000:3000"
     depends_on:
       - postgres
+    networks:
+      - default
 
   nominatim:
     image: mediagis/nominatim:4.4

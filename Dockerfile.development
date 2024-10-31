@@ -10,4 +10,4 @@ RUN yarn
 
 COPY . .
 
-CMD ["yarn", "start:dev-docker"]
+CMD ["yarn", "start:dev"]
